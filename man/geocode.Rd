@@ -4,12 +4,15 @@
 \alias{geocode}
 \title{Use BC Geocoder to geocode addresses. This is slow, goes through address list one by one}
 \usage{
-geocode(data, address_field = "addressString")
+geocode(data, address_field = "addressString",
+  localities = c("Vancouver"))
 }
 \arguments{
 \item{data}{data frame with rows to be geocoded}
 
 \item{address_field}{column in data frame that contains the address string}
+
+\item{localities}{optional array of locality names to restrict search to}
 }
 \value{
 data frame with `X`, `Y` columns for longitude and latitude, as well as
