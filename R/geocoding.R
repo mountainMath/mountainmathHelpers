@@ -10,6 +10,14 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   # api_key <- getOption("bc_geocoder_api_key") Not needed apparently
   base_url="https://apps.gov.bc.ca/pub/geocoder/addresses.csv"
   matchPrecision <- 'SITE, UNIT, CIVIC_NUMBER, INTERSECTION, BLOCK'
+  new_fields <- c("X","Y","matchPrecision","score","usedAddressString","faults","fullAddress")
+  match_fields <- intersect(names(data),new_fields)
+  if (length(match_fields)>0) {
+    warning(paste0("Will overwrite fieds ",match_fields %>% paste0(collapse = ", ")))
+  }
+  missing_fields <- setdiff(new_fields,names(data))
+  for (field in missing_fields) data[,field]=NA
+
   for (i in 1:nrow(data)) {
     if ((!"X" %in% names(data)) || is.na(data[i,"X"])) {
       address_string=data[[address_field]][i]
@@ -27,8 +35,8 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
         data$score[i]=r$score
         data$matchPrecision[i]=r$matchPrecision
         data$usedAddressString[i]=address_string
-        data$fullAddress=r$fullAddress
-        data$faults=r$faults
+        data$fullAddress[i]=r$fullAddress
+        data$faults[i]=r$faults
       }
     }
     if (i %% 100 ==0 ) print(paste0("Done with ",i,"/",nrow(data)))
