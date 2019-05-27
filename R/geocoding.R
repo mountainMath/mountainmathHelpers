@@ -21,7 +21,7 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   for (i in 1:nrow(data)) {
     if ((!"X" %in% names(data)) || is.na(data[i,"X"])) {
       address_string=data[[address_field]][i]
-      if (!is.null(localities) && length(localities)==1 && localities[0]=="Vancouver")
+      if (!is.null(localities) && length(localities)==1 && localities[1]=="Vancouver")
         address_string=paste0(sub(",$","",sub(" #\\d+.*,",",",sub(" Vancouver.*$","",address_string))),", Vancouver, BC")
       query=list(addressString=address_string,
                  matchPrecision=matchPrecision,
