@@ -18,6 +18,11 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   missing_fields <- setdiff(new_fields,names(data))
   for (field in missing_fields) data[,field]=NA
 
+  d <- data %>%
+    filter(is.na(X)) %>%
+    select(address_field) %>%
+    unique
+
   for (i in 1:nrow(data)) {
     if ((!"X" %in% names(data)) || is.na(data[i,"X"])) {
       address_string=data[[address_field]][i]
