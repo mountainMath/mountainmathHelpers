@@ -31,3 +31,34 @@ sf_to_s3_gzip <- function(data,s3_bucket,s3_path) {
   unlink(tmp.gz)
   result
 }
+
+
+#' download zipped shapefile and read shapefile.
+#' @param path URL string to zipped shape file
+#' @param file_mask optional grep string in case there are several shape files in the package
+#' @return an sf object with the data from the shape file
+#' @export
+get_shapefile <- function(path,file_mask=NA){
+  tmp <- tempfile()
+  download.file(path,tmp)
+  tmpdir <- tempdir()
+  utils::unzip(tmp,exdir=tmpdir)
+  file_names <- dir(tmpdir,"*.shp$")
+  if (is.na(file_mask)) {
+    file_name=file_names[1]
+  } else {
+    file_name <- file_names[grepl(file_mask,file_names)]
+    if (length(file_names)>1)file_names=file_names[1]
+  }
+  message_string <- paste0("Reading ",file_name,".")
+  if (length(file_names)>0) {
+    message_string <- paste0(message_string,"\nIgnoring ",
+                             paste0(setdiff(file_names,file_name),collapse = ", "),".")
+  }
+  message(message_string)
+  data <- sf::read_sf(file.path(tmpdir,file_name))
+  unlink(tmp)
+  #unlink(tmpdir,recursive = TRUE)
+  data
+}
+
