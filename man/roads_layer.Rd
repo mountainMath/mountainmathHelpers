@@ -4,8 +4,13 @@
 \alias{roads_layer}
 \title{Adds a roads lay for the map}
 \usage{
-roads_layer(bbox, color = "black", size = 0.1, tile_size_px = NULL,
-  transform = function(d) d)
+roads_layer(
+  bbox,
+  color = "black",
+  size = 0.1,
+  tile_size_px = NULL,
+  transform = function(d) d
+)
 }
 \arguments{
 \item{bbox}{bounding box for the layer}

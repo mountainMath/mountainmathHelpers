@@ -88,15 +88,15 @@ cov_bbox <- function(include_ubc=TRUE){
 }
 
 #' Vector tiles for Metro Vancouver
-#' @export
 #' cached vector tiles for Metro Vancouver
+#' @export
 metro_van_vector_tiles <- function(){
   simpleCache(get_vector_tiles(metro_van_bbox(FALSE)),"metro_van_vector_tiles")
 }
 
 #' Vector tiles for City of Vancouver + UBC
-#' @export
 #' cached vector tiles for the City of Vancouver
+#' @export
 cov_vector_tiles <- function(){
   simpleCache(get_vector_tiles(cov_bbox(TRUE)),"cov_vector_tiles")
 }

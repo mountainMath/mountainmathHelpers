@@ -4,8 +4,14 @@
 \alias{water_layer}
 \title{Adds a water lay for the map}
 \usage{
-water_layer(bbox, fill = "lightblue", color = NA, size = 1,
-  tile_size_px = NULL, transform = function(d) d)
+water_layer(
+  bbox,
+  fill = "lightblue",
+  color = NA,
+  size = 1,
+  tile_size_px = NULL,
+  transform = function(d) d
+)
 }
 \arguments{
 \item{bbox}{bounding box for the layer}

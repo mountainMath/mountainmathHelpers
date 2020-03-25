@@ -14,8 +14,6 @@ get_vector_tiles(bbox, width = NULL, height = NULL, refresh = FALSE)
 \item{height}{optional, width in height for the display image}
 
 \item{refresh}{results are cached for current session, optionally refresh cache}
-
-\item{bbox}{bounding box for which to get vector tile data}
 }
 \value{
 a list of layers with vector tile data

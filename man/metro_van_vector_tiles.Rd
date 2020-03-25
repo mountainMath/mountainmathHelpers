@@ -2,10 +2,12 @@
 % Please edit documentation in R/vector_tile_helpers.R
 \name{metro_van_vector_tiles}
 \alias{metro_van_vector_tiles}
-\title{Vector tiles for Metro Vancouver}
+\title{Vector tiles for Metro Vancouver
+cached vector tiles for Metro Vancouver}
 \usage{
 metro_van_vector_tiles()
 }
 \description{
 Vector tiles for Metro Vancouver
+cached vector tiles for Metro Vancouver
 }

@@ -2,10 +2,12 @@
 % Please edit documentation in R/vector_tile_helpers.R
 \name{cov_vector_tiles}
 \alias{cov_vector_tiles}
-\title{Vector tiles for City of Vancouver + UBC}
+\title{Vector tiles for City of Vancouver + UBC
+cached vector tiles for the City of Vancouver}
 \usage{
 cov_vector_tiles()
 }
 \description{
 Vector tiles for City of Vancouver + UBC
+cached vector tiles for the City of Vancouver
 }
