@@ -4,7 +4,13 @@
 \alias{get_vector_tiles}
 \title{Get vector tile data, expects option variable nextzen_API_key to be set}
 \usage{
-get_vector_tiles(bbox, width = NULL, height = NULL, refresh = FALSE)
+get_vector_tiles(
+  bbox,
+  width = NULL,
+  height = NULL,
+  refresh = FALSE,
+  nextzen_api_key = getOption("nextzen_API_key")
+)
 }
 \arguments{
 \item{bbox}{bounding box for which to get vector tile data}
@@ -14,6 +20,8 @@ get_vector_tiles(bbox, width = NULL, height = NULL, refresh = FALSE)
 \item{height}{optional, width in height for the display image}
 
 \item{refresh}{results are cached for current session, optionally refresh cache}
+
+\item{nextzen_api_key}{nextzen API key for vector tile data}
 }
 \value{
 a list of layers with vector tile data

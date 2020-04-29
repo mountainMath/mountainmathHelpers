@@ -1,17 +1,19 @@
 #' 2016 census hydro layer
+#' @param refresh if true, refresh the data
 #' @export
 get_2016_census_hydro_layer <- function(refresh=FALSE){
   path=file.path(getOption("custom_data_path"),"census_2016_hydro_layer_path")
   if (!dir.exists(path)){
     tmp=tempfile()
-    download.file("http://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lhy_000c16a_e.zip",tmp)
+    utils::download.file("http://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lhy_000c16a_e.zip",tmp)
     dir.create(path)
-    unzip(tmp,exdir = path)
+    utils::unzip(tmp,exdir = path)
   }
   sf::read_sf(path)
 }
 
 #' Metro Vancouver land use data (2011 version)
+#' @param refresh if true, refresh the data
 #' @export
 get_metro_vancouver_land_use_data <- function(refresh=FALSE){
   land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2011.zip"),
@@ -21,6 +23,7 @@ get_metro_vancouver_land_use_data <- function(refresh=FALSE){
 
 
 #' Metro Vancouver DA level geography cut down by MEtro Vancouevr land use data
+#' @param refresh if true, refresh the data
 #' @export
 get_metro_van_cut_geo_data_db <- function(refresh=FALSE){
   get_data <- function(){
@@ -33,11 +36,11 @@ get_metro_van_cut_geo_data_db <- function(refresh=FALSE){
       sf::st_union() %>%
       sf::st_sf() %>%
       sf::st_transform(4326) %>%
-      lwgeom::st_make_valid() %>%
+      sf::st_make_valid() %>%
       sf::st_collection_extract("POLYGON") %>%
       sf::st_cast("MULTIPOLYGON") %>%
       rmapshaper::ms_simplify(0.99) %>%
-      lwgeom::st_make_valid() %>%
+      sf::st_make_valid() %>%
       sf::st_collection_extract("POLYGON") %>%
       sf::st_cast("MULTIPOLYGON")
 
@@ -49,6 +52,7 @@ get_metro_van_cut_geo_data_db <- function(refresh=FALSE){
 }
 
 #' Metro Vancouver DA level geography cut down by MEtro Vancouevr land use data
+#' @param refresh if true, refresh the data
 #' @export
 get_metro_van_cut_geo_data_da <- function(refresh=FALSE){
   get_data <- function(){
@@ -61,11 +65,11 @@ get_metro_van_cut_geo_data_da <- function(refresh=FALSE){
       sf::st_union() %>%
       sf::st_sf() %>%
       sf::st_transform(4326) %>%
-      lwgeom::st_make_valid() %>%
+      sf::st_make_valid() %>%
       sf::st_collection_extract("POLYGON") %>%
       sf::st_cast("MULTIPOLYGON") %>%
       rmapshaper::ms_simplify(0.99) %>%
-      lwgeom::st_make_valid() %>%
+      sf::st_make_valid() %>%
       sf::st_collection_extract("POLYGON") %>%
       sf::st_cast("MULTIPOLYGON")
 
@@ -78,6 +82,7 @@ get_metro_van_cut_geo_data_da <- function(refresh=FALSE){
 
 
 #' Frequent transit layer
+#' @param refresh if true, refresh the data
 #' @export
 get_yvr_frequent_transit_network <- function(refresh=FALSE){
   cache_path=file.path(getOption("custom_data_path"),"frequent_transit_areas.shp")
@@ -115,7 +120,7 @@ get_yvr_frequent_transit_network <- function(refresh=FALSE){
 
     add_time <- function(data,time){
       data %>%
-        dplyr::bind_rows(tibble(origin_onestop_id=dplyr::unique(data$origin_onestop_id),origin_departure_time=time))
+        dplyr::bind_rows(tibble(origin_onestop_id=unique(data$origin_onestop_id),origin_departure_time=time))
     }
 
     summarize_stop_data <- function(data,hours,start_time,end_time){
@@ -125,8 +130,8 @@ get_yvr_frequent_transit_network <- function(refresh=FALSE){
         dplyr::group_by(origin_onestop_id) %>%
         dplyr::arrange(origin_departure_time) %>%
         dplyr::mutate(time=paste0("2018-11-19 ",origin_departure_time)) %>%
-        dplyr::mutate(previous_time=lag(time)) %>%
-        dplyr::mutate(wait_time=difftime(time,previous_time,units="mins") %>% as.numeric) %>%
+        dplyr::mutate(previous_time=dplyr::lag(.data$time)) %>%
+        dplyr::mutate(wait_time=difftime(.data$time,previous_time,units="mins") %>% as.numeric) %>%
         dplyr::summarise(wait_times=list(wait_time),
                   departure_times=list(origin_departure_time),
                   departures_per_hour=(length(origin_departure_time)-2)/hours)
@@ -145,8 +150,8 @@ get_yvr_frequent_transit_network <- function(refresh=FALSE){
   schedule_stop_data <- simpleCache(get_schedule_stop_data(),"yvr_schedule_stops_computed",refresh = FALSE) %>%
     dplyr::mutate(count=lengths(wait_times)-2) %>%
     dplyr::mutate(max_wait=purrr::map(wait_times,max,na.rm=TRUE) %>% unlist) %>%
-    dplyr::mutate(wait_80=purrr::map(wait_times,function(x)quantile(x,0.8,na.rm=TRUE)) %>% unlist) %>%
-    dplyr::mutate(wait_95=purrr::map(wait_times,function(x)quantile(x,0.95,na.rm=TRUE)) %>% unlist)
+    dplyr::mutate(wait_80=purrr::map(wait_times,function(x)stats::quantile(x,0.8,na.rm=TRUE)) %>% unlist) %>%
+    dplyr::mutate(wait_95=purrr::map(wait_times,function(x)stats::quantile(x,0.95,na.rm=TRUE)) %>% unlist)
 
 
   frequency_counts <- schedule_stop_data %>%
@@ -159,7 +164,7 @@ get_yvr_frequent_transit_network <- function(refresh=FALSE){
   bline_routes="099|095|096"
   skytrain_routes=" Line"
   frequent_stops <- stops %>%
-    dplyr::right_join(filter(frequency_counts,frequent) %>%
+    dplyr::right_join(dplyr::filter(frequency_counts,frequent) %>%
                         dplyr::select(max_wait,wait_80,count,origin_onestop_id),
                       by=c("onestop_id"="origin_onestop_id")) %>%
     dplyr::mutate(routes=lapply(routes_serving_stop,function(x){jsonlite::fromJSON(x)$route_name %>% unique()})) %>%

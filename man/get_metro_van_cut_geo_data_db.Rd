@@ -6,6 +6,9 @@
 \usage{
 get_metro_van_cut_geo_data_db(refresh = FALSE)
 }
+\arguments{
+\item{refresh}{if true, refresh the data}
+}
 \description{
 Metro Vancouver DA level geography cut down by MEtro Vancouevr land use data
 }

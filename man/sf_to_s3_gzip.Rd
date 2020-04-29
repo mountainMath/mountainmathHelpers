@@ -9,9 +9,9 @@ sf_to_s3_gzip(data, s3_bucket, s3_path)
 \arguments{
 \item{data}{sf object}
 
-\item{s3_path}{s3 path in bucket}
+\item{s3_bucket}{s3 bucket name}
 
-\item{bucket}{s3 bucket name}
+\item{s3_path}{s3 path in bucket}
 }
 \description{
 transfer sf object to gzipped geojson file on aws s3

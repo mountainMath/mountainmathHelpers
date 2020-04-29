@@ -19,8 +19,8 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   for (field in missing_fields) data[,field]=NA
 
   d <- data %>%
-    filter(is.na(X)) %>%
-    select(address_field) %>%
+    dplyr::filter(is.na(X)) %>%
+    dplyr::select(address_field) %>%
     unique
 
   for (i in 1:nrow(data)) {

@@ -6,6 +6,9 @@
 \usage{
 get_2016_census_hydro_layer(refresh = FALSE)
 }
+\arguments{
+\item{refresh}{if true, refresh the data}
+}
 \description{
 2016 census hydro layer
 }

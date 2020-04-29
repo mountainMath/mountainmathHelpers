@@ -6,6 +6,9 @@
 \usage{
 get_yvr_frequent_transit_network(refresh = FALSE)
 }
+\arguments{
+\item{refresh}{if true, refresh the data}
+}
 \description{
 Frequent transit layer
 }

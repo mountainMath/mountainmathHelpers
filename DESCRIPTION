@@ -1,12 +1,40 @@
 Package: mountainmathHelpers
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Title: Helper Functions by MountainMath
+Version: 0.1.1
+Author: Jens von Bergmann <jens@mountainmath.ca>
+Maintainer: Jens von Bergmann <jens@mountainmath.ca>
+Description: Various helper functions, including convenience geoms for adding vector tiles to a map plot.
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.0
+Imports:
+    dplyr,
+    rlang,
+    R.utils,
+    aws.s3,
+    cancensus,
+    digest,
+    httr,
+    jsonlite,
+    lwgeom,
+    purrr,
+    readr,
+    rmapshaper,
+    rmapzen,
+    sf,
+    transitland,
+    ggplot2
+Requires: 
+    ggplot2,
+    dplyr,
+    readr,
+    rlang,
+    sf,
+    rmapzen,
+    aws.s3
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

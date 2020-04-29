@@ -7,7 +7,7 @@
 cov_bbox(include_ubc = TRUE)
 }
 \arguments{
-\item{clipped}{should part of Nroth Shore mountains be clipped?}
+\item{include_ubc}{include UBC area in boundng box}
 }
 \value{
 a bounding box

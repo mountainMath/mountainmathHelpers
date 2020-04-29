@@ -6,6 +6,9 @@
 \usage{
 get_metro_vancouver_land_use_data(refresh = FALSE)
 }
+\arguments{
+\item{refresh}{if true, refresh the data}
+}
 \description{
 Metro Vancouver land use data (2011 version)
 }

@@ -17,17 +17,41 @@ simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FA
 
 #' transfer sf object to gzipped geojson file on aws s3
 #' @param data sf object
-#' @param bucket s3 bucket name
+#' @param s3_bucket s3 bucket name
 #' @param s3_path s3 path in bucket
 #' @export
 sf_to_s3_gzip <- function(data,s3_bucket,s3_path) {
   tmp=tempfile(fileext = ".geojson")
-  tmp.gz=paste0(tmp,".gz")
   sf::st_write(data,tmp,delete_dsn=file.exists(tmp))
-  R.utils::gzip(tmp,overwrite=TRUE)
+  result <- file_to_s3_gzip(tmp,s3_bucket,s3_path)
   unlink(tmp)
+  result
+}
+
+#' transfer file to gzipped file on aws s3
+#' @param path path to local file
+#' @param s3_bucket s3 bucket name
+#' @param s3_path s3 path in bucket, if it is a path component ending with a slash (`/`)
+#' the basename of the input path will be appended
+#' @param content_type mime type of the data, default is inferred from file extension
+#' @export
+file_to_s3_gzip <- function(path,s3_bucket,s3_path,content_type=NULL) {
+  if (is.null(content_type)) {
+    if (endsWith(path,"json")) {
+      content_type='application/json'
+    } else if (endsWith(path,"csv")) {
+      content_type='application/csv'
+    } else {
+      content_type='application/text'
+    }
+  }
+  tmp.gz=paste0(path,".gz")
+  R.utils::gzip(path,destname=tmp.gz,overwrite=TRUE)
+  if (endsWith(s3_path,"/")) {
+    s3_path=paste0(s3_path,basename(tmp.gz))
+  }
   result = aws.s3::put_object(tmp.gz,s3_path,s3_bucket,acl="public-read",
-                              headers=list("Content-Type"='application/json', "Content-Encoding"='gzip'))
+                              headers=list("Content-Type"=content_type, "Content-Encoding"='gzip'))
   unlink(tmp.gz)
   result
 }
@@ -40,7 +64,7 @@ sf_to_s3_gzip <- function(data,s3_bucket,s3_path) {
 #' @export
 get_shapefile <- function(path,file_mask=NA){
   tmp <- tempfile()
-  download.file(path,tmp)
+  utils::download.file(path,tmp)
   tmpdir <- tempdir()
   utils::unzip(tmp,exdir=tmpdir)
   file_names <- dir(tmpdir,"*.shp$")
@@ -61,4 +85,8 @@ get_shapefile <- function(path,file_mask=NA){
   #unlink(tmpdir,recursive = TRUE)
   data
 }
+
+#' @importFrom dplyr %>%
+#' @importFrom rlang .data
+NULL
 
