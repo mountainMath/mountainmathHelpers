@@ -21,10 +21,8 @@ Imports:
     lwgeom,
     purrr,
     readr,
-    rmapshaper,
     rmapzen,
     sf,
-    transitland,
     ggplot2
 Requires: 
     ggplot2,
@@ -32,7 +30,6 @@ Requires:
     readr,
     rlang,
     sf,
-    rmapzen,
     aws.s3
 Suggests: 
     knitr,

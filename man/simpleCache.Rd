@@ -11,7 +11,7 @@ simpleCache(object, key, path = getOption("custom_data_path"), refresh = FALSE)
 
 \item{key}{cache key}
 
-\item{path}{path to cache the data}
+\item{path}{path where to cache the data}
 
 \item{refresh}{bool option to force refresh of cache, default FALSE}
 }

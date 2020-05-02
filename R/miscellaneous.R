@@ -1,10 +1,14 @@
 #' Simple key-value cache function accepting closures
 #' @param object closure with return expression to be cached
 #' @param key cache key
-#' @param path path to cache the data
+#' @param path path where to cache the data
 #' @param refresh bool option to force refresh of cache, default FALSE
 #' @export
 simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FALSE){
+  if (is.null(path)) {
+    path <- tempdir()
+    message("Data is cached for the duration of the current session.\nFor longer term caching, please specify a cache path or set the 'custom_data_path' option.")
+  }
   cache_path=file.path(path,key)
   if(!refresh & file.exists(cache_path)) {
     readRDS(cache_path)
@@ -21,7 +25,7 @@ simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FA
 #' @param s3_path s3 path in bucket
 #' @export
 sf_to_s3_gzip <- function(data,s3_bucket,s3_path) {
-  tmp=tempfile(fileext = ".geojson")
+  tmp <- tempfile(fileext = ".geojson")
   sf::st_write(data,tmp,delete_dsn=file.exists(tmp))
   result <- file_to_s3_gzip(tmp,s3_bucket,s3_path)
   unlink(tmp)
@@ -50,8 +54,12 @@ file_to_s3_gzip <- function(path,s3_bucket,s3_path,content_type=NULL) {
   if (endsWith(s3_path,"/")) {
     s3_path=paste0(s3_path,basename(tmp.gz))
   }
-  result = aws.s3::put_object(tmp.gz,s3_path,s3_bucket,acl="public-read",
-                              headers=list("Content-Type"=content_type, "Content-Encoding"='gzip'))
+  result <- aws.s3::put_object(tmp.gz,s3_path,
+                               s3_bucket,
+                               multipart = TRUE,
+                               acl="public-read",
+                               headers=list("Content-Type"=content_type,
+                                            "Content-Encoding"='gzip'))
   unlink(tmp.gz)
   result
 }

@@ -19,7 +19,7 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   for (field in missing_fields) data[,field]=NA
 
   d <- data %>%
-    dplyr::filter(is.na(X)) %>%
+    dplyr::filter(is.na(.data$X)) %>%
     dplyr::select(address_field) %>%
     unique
 
@@ -49,15 +49,4 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   data
 }
 
-batch_geocode <- function(data,address_field="addressString") {
-  api_key="I1S6uQP2vb4dBPdwv80to9o2HQZQM5qa"
-  url='http://delivery.apps.gov.bc.ca/pub/cpf/ws/apps/geocoder/multiple.json'
-  url="https://geocoder.api.gov.bc.ca/addresses.json"
-  headers = list('Accept'= 'application/json')
-fields = list('inputDataContentType'= 'csv',
-	'resultSrid'='3005',
-	'interpolation'='adaptive',
-	'locationDescriptor'='any',
-	'resultDataContentType'='csv',
-	'media'= 'application/json')
-}
+
