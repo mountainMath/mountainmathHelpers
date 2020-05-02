@@ -16,11 +16,12 @@ before_install:
   - sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev libv8-dev libprotobuf-dev protobuf-compiler libjq-dev
 
 r_binary_packages:
+  - dplyr
   - sp
   - rgdal
   - rgeos
   - sf
-  - dplyr
+  - lwgeom
   - markdown
   - readr
   - rmarkdown

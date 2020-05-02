@@ -45,7 +45,7 @@ data <- get_census("CA16",regions=list(CSD="5915022"),level="CT",geo_format="sf"
 #> Reading geo data from local cache.
 
 ggplot(data) +
-  geom_sf(aes(fill=lico),size=0.1) +
+  geom_sf(aes(fill=lico/100),size=0.1) +
   scale_fill_viridis_c(labels=scales::percent) +
   geom_water() +
   geom_roads() +
