@@ -65,6 +65,11 @@
 <!-- badges: start -->
 
 <p>MountainmathHelpers is a collection of helper functions that are frequently used at MountainMath. This package can be used to access these functions, be it for reproducing and running code written by MountianMath or because they happen to be useful for whatever code others are writing.</p>
+<div id="reference" class="section level2">
+<h2 class="hasAnchor">
+<a href="#reference" class="anchor"></a>Reference</h2>
+<p><a href="https://mountainmath.github.io/mountainmathHelpers/">mountainmathHelpers home page and reference guide</a></p>
+</div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
@@ -82,8 +87,6 @@
 
 <span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/cancensus/man/get_census.html">get_census</a></span>(<span class="st">"CA16"</span>,<span class="kw">regions</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CSD</span><span class="kw">=</span><span class="st">"5915022"</span>),<span class="kw">level</span><span class="kw">=</span><span class="st">"CT"</span>,<span class="kw">geo_format</span><span class="kw">=</span><span class="st">"sf"</span>,
                    <span class="kw">vectors</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lico"</span><span class="kw">=</span><span class="st">"v_CA16_2570"</span>))
-<span class="co">#&gt; Reading vectors data from local cache.</span>
-<span class="co">#&gt; Reading geo data from local cache.</span>
 
 <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">data</span>) +
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">lico</span>/<span class="fl">100</span>),<span class="kw">size</span><span class="kw">=</span><span class="fl">0.1</span>) +
@@ -91,10 +94,7 @@
   <span class="fu"><a href="reference/geom_water.html">geom_water</a></span>() +
   <span class="fu"><a href="reference/geom_roads.html">geom_roads</a></span>() +
   <span class="fu"><a href="reference/coord_bbox.html">coord_bbox</a></span>(<span class="kw pkg">sf</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/sf/man/st_bbox.html">st_bbox</a></span>(<span class="no">data</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">title</span><span class="kw">=</span><span class="st">"Share of people in low income (LICO-AT)"</span>,<span class="kw">fill</span><span class="kw">=</span><span class="kw">NULL</span>)
-<span class="co">#&gt; Registered S3 method overwritten by 'geojson':</span>
-<span class="co">#&gt;   method        from     </span>
-<span class="co">#&gt;   print.geojson geojsonsf</span></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">title</span><span class="kw">=</span><span class="st">"Share of people in low income (LICO-AT)"</span>,<span class="kw">fill</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 </div>
 </div>

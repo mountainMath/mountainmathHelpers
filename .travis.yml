@@ -3,7 +3,7 @@ cache: packages
 latex: false
 sudo: required
 os: linux
-dist: xenial
+dist: trusty
 
 r:
 #  - release

@@ -23,6 +23,9 @@ MountainmathHelpers is a collection of helper functions that are frequently used
 can be used to access these functions, be it for reproducing and running code written by MountianMath or
 because they happen to be useful for whatever code others are writing.
 
+## Reference
+[mountainmathHelpers home page and reference guide](https://mountainmath.github.io/mountainmathHelpers/)
+
 ## Installation
 
 You can install the development version from [GitHub](https://github.com/mountainMath/mountainmathHelpers) with:
@@ -38,7 +41,7 @@ It can be cumbersome to add nice background layers in ggplot maps. The `rmapzen`
 
 Here is an example how to add water and road vector layers.
 
-```{r}
+```{r message=FALSE}
 library(mountainmathHelpers)
 library(cancensus)
 library(ggplot2)

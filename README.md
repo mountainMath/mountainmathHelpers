@@ -15,6 +15,11 @@ these functions, be it for reproducing and running code written by
 MountianMath or because they happen to be useful for whatever code
 others are writing.
 
+## Reference
+
+[mountainmathHelpers home page and reference
+guide](https://mountainmath.github.io/mountainmathHelpers/)
+
 ## Installation
 
 You can install the development version from
@@ -41,8 +46,6 @@ library(ggplot2)
 
 data <- get_census("CA16",regions=list(CSD="5915022"),level="CT",geo_format="sf",
                    vectors=c("lico"="v_CA16_2570"))
-#> Reading vectors data from local cache.
-#> Reading geo data from local cache.
 
 ggplot(data) +
   geom_sf(aes(fill=lico/100),size=0.1) +
@@ -51,9 +54,6 @@ ggplot(data) +
   geom_roads() +
   coord_bbox(sf::st_bbox(data)) +
   labs(title="Share of people in low income (LICO-AT)",fill=NULL)
-#> Registered S3 method overwritten by 'geojson':
-#>   method        from     
-#>   print.geojson geojsonsf
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
