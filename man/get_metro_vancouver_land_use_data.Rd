@@ -4,10 +4,18 @@
 \alias{get_metro_vancouver_land_use_data}
 \title{Metro Vancouver land use data (2011 version)}
 \usage{
-get_metro_vancouver_land_use_data(refresh = FALSE)
+get_metro_vancouver_land_use_data(
+  cache_path = getOption("custom_data_path"),
+  refresh = FALSE
+)
 }
 \arguments{
+\item{cache_path}{directory for caching the data}
+
 \item{refresh}{if true, refresh the data}
+}
+\value{
+an sf object with the metro vancouver land use data
 }
 \description{
 Metro Vancouver land use data (2011 version)

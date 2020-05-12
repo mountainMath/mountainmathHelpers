@@ -6,8 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Vector tiles for Metro Vancouver
-cached vector tiles for Metro Vancouver — metro_van_vector_tiles • mountainmathHelpers</title>
+<title>Geographic attribute data with DA representative points (2016 census version) — get_statcan_geographic_attribute_data • mountainmathHelpers</title>
 
 
 <!-- jquery -->
@@ -40,10 +39,8 @@ cached vector tiles for Metro Vancouver — metro_van_vector_tiles • mountainm
 
 
 
-<meta property="og:title" content="Vector tiles for Metro Vancouver
-cached vector tiles for Metro Vancouver — metro_van_vector_tiles" />
-<meta property="og:description" content="Vector tiles for Metro Vancouver
-cached vector tiles for Metro Vancouver" />
+<meta property="og:title" content="Geographic attribute data with DA representative points (2016 census version) — get_statcan_geographic_attribute_data" />
+<meta property="og:description" content="Geographic attribute data with DA representative points (2016 census version)" />
 
 
 
@@ -106,23 +103,36 @@ cached vector tiles for Metro Vancouver" />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Vector tiles for Metro Vancouver
-cached vector tiles for Metro Vancouver</h1>
+    <h1>Geographic attribute data with DA representative points (2016 census version)</h1>
     
-    <div class="hidden name"><code>metro_van_vector_tiles.Rd</code></div>
+    <div class="hidden name"><code>get_statcan_geographic_attribute_data.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Vector tiles for Metro Vancouver
-cached vector tiles for Metro Vancouver</p>
+    <p>Geographic attribute data with DA representative points (2016 census version)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>metro_van_vector_tiles</span>()</pre>
+    <pre class="usage"><span class='fu'>get_statcan_geographic_attribute_data</span>(
+  <span class='kw'>cache_path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"custom_data_path"</span>),
+  <span class='kw'>refresh</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>cache_path</th>
+      <td><p>directory for caching the data</p></td>
+    </tr>
+    <tr>
+      <th>refresh</th>
+      <td><p>if true, refresh the data</p></td>
+    </tr>
+    </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>rmapzen type vector tile object</p>
+    <p>an sf object with the representative point data</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -112,17 +112,27 @@
     <p>Metro Vancouver land use data (2011 version)</p>
     </div>
 
-    <pre class="usage"><span class='fu'>get_metro_vancouver_land_use_data</span>(<span class='kw'>refresh</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+    <pre class="usage"><span class='fu'>get_metro_vancouver_land_use_data</span>(
+  <span class='kw'>cache_path</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/options.html'>getOption</a></span>(<span class='st'>"custom_data_path"</span>),
+  <span class='kw'>refresh</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>cache_path</th>
+      <td><p>directory for caching the data</p></td>
+    </tr>
     <tr>
       <th>refresh</th>
       <td><p>if true, refresh the data</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>an sf object with the metro vancouver land use data</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

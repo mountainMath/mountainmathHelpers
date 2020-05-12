@@ -15,6 +15,9 @@ simpleCache(object, key, path = getOption("custom_data_path"), refresh = FALSE)
 
 \item{refresh}{bool option to force refresh of cache, default FALSE}
 }
+\value{
+object, (potentially cached version)
+}
 \description{
 Simple key-value cache function accepting closures
 }

@@ -3,6 +3,7 @@
 #' @param key cache key
 #' @param path path where to cache the data
 #' @param refresh bool option to force refresh of cache, default FALSE
+#' @return object, (potentially cached version)
 #' @export
 simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FALSE){
   if (is.null(path)) {
@@ -23,6 +24,7 @@ simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FA
 #' @param data sf object
 #' @param s3_bucket s3 bucket name
 #' @param s3_path s3 path in bucket
+#' @return upload result (boolean)
 #' @export
 sf_to_s3_gzip <- function(data,s3_bucket,s3_path) {
   tmp <- tempfile(fileext = ".geojson")
@@ -38,6 +40,7 @@ sf_to_s3_gzip <- function(data,s3_bucket,s3_path) {
 #' @param s3_path s3 path in bucket, if it is a path component ending with a slash (`/`)
 #' the basename of the input path will be appended
 #' @param content_type mime type of the data, default is inferred from file extension
+#' @return upload result (boolean)
 #' @export
 file_to_s3_gzip <- function(path,s3_bucket,s3_path,content_type=NULL) {
   if (is.null(content_type)) {

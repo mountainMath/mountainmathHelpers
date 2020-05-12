@@ -4,10 +4,18 @@
 \alias{get_2016_census_hydro_layer}
 \title{2016 census hydro layer}
 \usage{
-get_2016_census_hydro_layer(refresh = FALSE)
+get_2016_census_hydro_layer(
+  cache_path = getOption("custom_data_path"),
+  refresh = FALSE
+)
 }
 \arguments{
+\item{cache_path}{directory for caching the data}
+
 \item{refresh}{if true, refresh the data}
+}
+\value{
+an sf object with the 2016 hydro layer
 }
 \description{
 2016 census hydro layer

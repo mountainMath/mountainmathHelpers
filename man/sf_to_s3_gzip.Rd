@@ -13,6 +13,9 @@ sf_to_s3_gzip(data, s3_bucket, s3_path)
 
 \item{s3_path}{s3 path in bucket}
 }
+\value{
+upload result (boolean)
+}
 \description{
 transfer sf object to gzipped geojson file on aws s3
 }

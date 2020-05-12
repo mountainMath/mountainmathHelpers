@@ -16,6 +16,9 @@ the basename of the input path will be appended}
 
 \item{content_type}{mime type of the data, default is inferred from file extension}
 }
+\value{
+upload result (boolean)
+}
 \description{
 transfer file to gzipped file on aws s3
 }

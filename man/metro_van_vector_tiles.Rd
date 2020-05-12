@@ -7,6 +7,9 @@ cached vector tiles for Metro Vancouver}
 \usage{
 metro_van_vector_tiles()
 }
+\value{
+rmapzen type vector tile object
+}
 \description{
 Vector tiles for Metro Vancouver
 cached vector tiles for Metro Vancouver

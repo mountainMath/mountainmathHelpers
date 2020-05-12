@@ -7,6 +7,9 @@ cached vector tiles for the City of Vancouver}
 \usage{
 cov_vector_tiles()
 }
+\value{
+rmapzen type vector tile object
+}
 \description{
 Vector tiles for City of Vancouver + UBC
 cached vector tiles for the City of Vancouver
