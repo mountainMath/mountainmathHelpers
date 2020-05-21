@@ -21,3 +21,4 @@ addons:
       - libgeos-dev
       - libgdal-dev
       - libv8-dev
+      - libnode-dev
