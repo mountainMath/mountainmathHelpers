@@ -20,6 +20,19 @@ simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FA
   }
 }
 
+#' Convert a bounding box object into a polygon object
+#' @param bbox bounding box object
+#' @return a polygon with the same oulines of the bounding box
+#' @export
+bbox_to_polygon <- function(bbox){
+  data.frame(X=c(bbox$xmin,x=bbox$xmin,bbox$xmax,bbox$xmax),
+                 Y=c(bbox$ymin,bbox$ymax,bbox$ymin,bbox$ymax)) %>%
+    dplyr::as_tibble() %>%
+    sf::st_as_sf(coords=c("X","Y"),crs=sf::st_crs(bbox),agr="constant") %>%
+    sf::st_union() %>%
+    sf::st_convex_hull()
+}
+
 #' transfer sf object to gzipped geojson file on aws s3
 #' @param data sf object
 #' @param s3_bucket s3 bucket name
@@ -97,7 +110,12 @@ get_shapefile <- function(path,file_mask=NA){
   data
 }
 
+# Suppress warnings for missing bindings for '.' in R CMD check.
+if (getRversion() >= "2.15.1") utils::globalVariables(c("."))
+
 #' @importFrom dplyr %>%
 #' @importFrom rlang .data
+#' @importFrom utils unzip
+#' @importFrom utils download.file
 NULL
 

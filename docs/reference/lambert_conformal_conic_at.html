@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Vector tiles for City of Vancouver — cov_bbox • mountainmathHelpers</title>
+<title>get crs object for Lambert Conformal Conic projection centered at the input data — lambert_conformal_conic_at • mountainmathHelpers</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Vector tiles for City of Vancouver — cov_bbox" />
-<meta property="og:description" content="Vector tiles for City of Vancouver" />
+<meta property="og:title" content="get crs object for Lambert Conformal Conic projection centered at the input data — lambert_conformal_conic_at" />
+<meta property="og:description" content="get crs object for Lambert Conformal Conic projection centered at the input data" />
 
 
 
@@ -103,29 +103,33 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Vector tiles for City of Vancouver</h1>
+    <h1>get crs object for Lambert Conformal Conic projection centered at the input data</h1>
     
-    <div class="hidden name"><code>cov_bbox.Rd</code></div>
+    <div class="hidden name"><code>lambert_conformal_conic_at.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Vector tiles for City of Vancouver</p>
+    <p>get crs object for Lambert Conformal Conic projection centered at the input data</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cov_bbox</span>(<span class='kw'>include_ubc</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>lambert_conformal_conic_at</span>(<span class='no'>data</span>, <span class='kw'>center</span> <span class='kw'>=</span> <span class='kw'>NULL</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>include_ubc</th>
-      <td><p>include UBC area in boundng box</p></td>
+      <th>data</th>
+      <td><p>sf object</p></td>
+    </tr>
+    <tr>
+      <th>center</th>
+      <td><p>optional centre point for the crs</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a bounding box</p>
+    <p>crs object</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

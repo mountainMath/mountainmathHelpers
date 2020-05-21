@@ -48,4 +48,3 @@ get_statcan_geographic_attribute_data <- function(cache_path=getOption("custom_d
     sf::st_as_sf(coords = c("DArplong", "DArplat"), crs = 4326, agr = "constant")
 }
 
-

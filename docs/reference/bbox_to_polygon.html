@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Vector tiles for City of Vancouver — cov_bbox • mountainmathHelpers</title>
+<title>Convert a bounding box object into a polygon object — bbox_to_polygon • mountainmathHelpers</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Vector tiles for City of Vancouver — cov_bbox" />
-<meta property="og:description" content="Vector tiles for City of Vancouver" />
+<meta property="og:title" content="Convert a bounding box object into a polygon object — bbox_to_polygon" />
+<meta property="og:description" content="Convert a bounding box object into a polygon object" />
 
 
 
@@ -103,29 +103,29 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Vector tiles for City of Vancouver</h1>
+    <h1>Convert a bounding box object into a polygon object</h1>
     
-    <div class="hidden name"><code>cov_bbox.Rd</code></div>
+    <div class="hidden name"><code>bbox_to_polygon.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Vector tiles for City of Vancouver</p>
+    <p>Convert a bounding box object into a polygon object</p>
     </div>
 
-    <pre class="usage"><span class='fu'>cov_bbox</span>(<span class='kw'>include_ubc</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>bbox_to_polygon</span>(<span class='no'>bbox</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>include_ubc</th>
-      <td><p>include UBC area in boundng box</p></td>
+      <th>bbox</th>
+      <td><p>bounding box object</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>a bounding box</p>
+    <p>a polygon with the same oulines of the bounding box</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
