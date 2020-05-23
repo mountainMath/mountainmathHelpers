@@ -20,6 +20,38 @@ simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FA
   }
 }
 
+
+#' Cut values with pretty labels
+#' @param values a numeric vector which is to be converted to a factor by cutting.
+#' @param breaks a numeric vector of two or more unique cut points
+#' @param format a function specifying how to format values in the labels
+#' @param binding a string binding two values in the label
+#' @param spacing a spacing string between elements in the label
+#' @param under_text a string taking the space of the lower value and binding if the lower value is `-Inf`
+#' @param over_text a string taking the space of the upper value and binding if the upper value is `-Inf`
+#' @param ... additional arguments passed to `cut`
+#' @return object, (potentially cached version)
+#' @export
+pretty_cut <- function(values,breaks,format=function(d)d,
+                       binding="to",spacing=" ",
+                       under_text="<",over_text=">",
+                       ...){
+  labels <- seq(1,length(breaks)-1) %>%
+    lapply(function(i){
+      a=breaks[i]
+      b=breaks[i+1]
+      if (is.infinite(a) & a<0) {
+        text=paste0(under_text,spacing,format(b))
+      } else if (is.infinite(b) & b>0) {
+        text=paste0(over_text,spacing,format(a))
+      } else {
+        ta=paste0(format(a),spacing,binding,spacing,format(b))
+      }
+    }) %>%
+    unlist()
+  cut(values,breaks=breaks,labels=labels,...)
+}
+
 #' Convert a bounding box object into a polygon object
 #' @param bbox bounding box object
 #' @return a polygon with the same oulines of the bounding box
