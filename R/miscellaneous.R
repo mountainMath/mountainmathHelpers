@@ -98,7 +98,7 @@ file_to_s3_gzip <- function(path,s3_bucket,s3_path,content_type=NULL) {
     }
   }
   tmp.gz=paste0(path,".gz")
-  R.utils::gzip(path,destname=tmp.gz,overwrite=TRUE)
+  R.utils::gzip(path,destname=tmp.gz,overwrite=TRUE,remove=FALSE)
   if (endsWith(s3_path,"/")) {
     s3_path=paste0(s3_path,basename(tmp.gz))
   }
