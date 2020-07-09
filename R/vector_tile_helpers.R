@@ -51,7 +51,7 @@ StatVectorTiles <- ggplot2::ggproto("StatVectorTiles", ggplot2::Stat,
                        if (is.na(orig_crs$epsg) | orig_crs$epsg != 4326) {
                          tile_data <- tile_data %>% sf::st_transform(orig_crs)
                        }
-                       tile_data %>% transform()
+                       tile_data %>% transform
                      }
 )
 

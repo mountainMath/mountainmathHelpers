@@ -122,8 +122,8 @@ get_shapefile <- function(path,file_mask=NA){
   tmp <- tempfile()
   utils::download.file(path,tmp)
   tmpdir <- tempdir()
-  utils::unzip(tmp,exdir=tmpdir)
-  file_names <- dir(tmpdir,"*.shp$")
+  fs<-utils::unzip(tmp,exdir=tmpdir)
+  file_names <- fs[grepl("\\.shp$",fs)]
   if (is.na(file_mask)) {
     file_name=file_names[1]
   } else {
@@ -136,8 +136,9 @@ get_shapefile <- function(path,file_mask=NA){
                              paste0(setdiff(file_names,file_name),collapse = ", "),".")
   }
   message(message_string)
-  data <- sf::read_sf(file.path(tmpdir,file_name))
+  data <- sf::read_sf(file_name)
   unlink(tmp)
+  unlink(fs)
   #unlink(tmpdir,recursive = TRUE)
   data
 }
