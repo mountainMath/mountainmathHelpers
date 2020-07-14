@@ -48,7 +48,7 @@ StatVectorTiles <- ggplot2::ggproto("StatVectorTiles", ggplot2::Stat,
                        vector_tiles <- get_vector_tiles(bbox,tile_size_px,tile_size_px)
                        tile_data <- rmapzen::as_sf(vector_tiles[[type]])
                        orig_crs <- sf::st_crs(bbox)
-                       if (is.na(orig_crs$epsg) | orig_crs$epsg != 4326) {
+                       if (!is.na(orig_crs$epsg) & orig_crs$epsg != 4326) {
                          tile_data <- tile_data %>% sf::st_transform(orig_crs)
                        }
                        tile_data %>% transform
@@ -111,7 +111,10 @@ geom_water <- function(..., fill = "lightblue", size = 0,
   geom_vector_tiles(..., type="water",
                     fill = fill, size = size,
                     nextzen_api_key = nextzen_api_key,
-                    tile_size_px = tile_size_px, transform = transform)
+                    tile_size_px = tile_size_px,
+                    transform = function(d)d %>%
+                      transform %>%
+                      filter(sf::st_geometry_type(.) %in% c("MULTIPOLYGON","POLYGON")))
 }
 
 #' convenience function to cut off map at bounding box
@@ -144,10 +147,12 @@ lambert_conformal_conic_at <- function(data,center=NULL){
 #' @export
 #' @return a bounding box
 metro_van_bbox <- function(clipped=TRUE){
-  if (clipped) {
-    bbox=sf::st_bbox(c(sf::st_point(c(-123.43189,   49.00193)), sf::st_point(c(-122.40864,   49.4806169)) ),crs=4326)
+  if (clipped==TRUE) {
+    bbox <- sf::st_bbox(c(xmin = -123.43189, xmax = -122.40864, ymin = 49.00193, ymax = 49.4806169), crs = sf::st_crs(4326))
+  } else if (clipped=="tight") {
+    bbox <- sf::st_bbox(c(xmin = -123.38, xmax = -122.5, ymin = 49.02, ymax = 49.4), crs = sf::st_crs(4326))
   } else {
-    bbox=sf::st_bbox(c(sf::st_point(c(-123.43189,   49.00193)), sf::st_point(c(-122.40864,   49.57428)) ),crs=4326)
+    bbox <- sf::st_bbox(c(xmin = -123.43189, xmax = -122.40864, ymin = 49.00193, ymax = 49.57428), crs = sf::st_crs(4326))
   }
   bbox
 }
@@ -158,9 +163,9 @@ metro_van_bbox <- function(clipped=TRUE){
 #' @return a bounding box
 cov_bbox <- function(include_ubc=TRUE){
   if (include_ubc) {
-    bbox=sf::st_bbox(c(sf::st_point(c(-123.280,   49.194)), sf::st_point(c(-123.013,   49.320)) ),crs=4326)
+    bbox <- sf::st_bbox(c(xmin = -123.280, xmax = -123.013, ymin = 49.194, ymax = 49.320), crs = sf::st_crs(4326))
   } else {
-    bbox=sf::st_bbox(c(sf::st_point(c(-123.229,   49.194)), sf::st_point(c(-123.013,   49.320)) ),crs=4326)
+    bbox <- sf::st_bbox(c(xmin = -123.229, xmax = -123.013, ymin = 49.194, ymax = 49.320), crs = sf::st_crs(4326))
   }
   bbox
 }
