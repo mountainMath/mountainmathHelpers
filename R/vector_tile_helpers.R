@@ -114,7 +114,7 @@ geom_water <- function(..., fill = "lightblue", size = 0,
                     tile_size_px = tile_size_px,
                     transform = function(d)d %>%
                       transform %>%
-                      filter(sf::st_geometry_type(.) %in% c("MULTIPOLYGON","POLYGON")))
+                      dplyr::filter(sf::st_geometry_type(.) %in% c("MULTIPOLYGON","POLYGON")))
 }
 
 #' convenience function to cut off map at bounding box

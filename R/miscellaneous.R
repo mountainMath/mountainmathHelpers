@@ -113,6 +113,38 @@ file_to_s3_gzip <- function(path,s3_bucket,s3_path,content_type=NULL) {
 }
 
 
+#' transfer file to aws s3
+#' @param path path to local file
+#' @param s3_bucket s3 bucket name
+#' @param s3_path s3 path in bucket, if it is a path component ending with a slash (`/`)
+#' the basename of the input path will be appended
+#' @param content_type mime type of the data, default is inferred from file extension
+#' @return upload result (boolean)
+#' @export
+file_to_s3 <- function(path,s3_bucket,s3_path,content_type=NULL) {
+  if (is.null(content_type)) {
+    if (endsWith(path,"json")) {
+      content_type='application/json'
+    } else if (endsWith(path,"csv")) {
+      content_type='application/csv'
+    } else if (endsWith(path,"zip")) {
+      content_type='application/zip'
+    } else {
+      content_type='application/text'
+    }
+  }
+  if (endsWith(s3_path,"/")) {
+    s3_path=paste0(s3_path,basename(path))
+  }
+  result <- aws.s3::put_object(path,s3_path,
+                               s3_bucket,
+                               multipart = TRUE,
+                               acl="public-read",
+                               headers=list("Content-Type"=content_type))
+  result
+}
+
+
 #' download zipped shapefile and read shapefile.
 #' @param path URL string to zipped shape file
 #' @param file_mask optional grep string in case there are several shape files in the package

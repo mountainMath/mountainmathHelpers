@@ -14,6 +14,39 @@ get_2016_census_hydro_layer <- function(cache_path=getOption("custom_data_path")
   sf::read_sf(path)
 }
 
+#' 2016 census FSA geography
+#' @param refresh if true, refresh the data
+#' @param cache_path directory for caching the data
+#' @return an sf object with the 2016 FSA geography
+#' @export
+get_2016_census_fsa_geos <- function(cache_path=getOption("custom_data_path"),refresh=FALSE){
+  path=file.path(cache_path,"census_2016_fsa_geos")
+  if (!dir.exists(path)){
+    tmp=tempfile()
+    utils::download.file("http://www12.statcan.gc.ca/census-recensement/2011/geo/bound-limit/files-fichiers/2016/lfsa000b16a_e.zip",tmp)
+    dir.create(path)
+    utils::unzip(tmp,exdir = path)
+  }
+  sf::read_sf(path)
+}
+
+#' 2016 census FSA data
+#' @param refresh if true, refresh the data
+#' @param cache_path directory for caching the data
+#' @return an tibble with the 2016 FSA data
+#' @export
+get_2016_census_fsa_data <- function(cache_path=getOption("custom_data_path"),refresh=FALSE){
+  path=file.path(cache_path,"census_2016_fsa_data.csv")
+  if (!dir.exists(path)){
+    tmp=tempfile()
+    utils::download.file("https://www12.statcan.gc.ca/census-recensement/2016/dp-pd/prof/details/download-telecharger/comp/GetFile.cfm?Lang=E&FILETYPE=CSV&GEONO=046",tmp)
+    dir.create(path)
+    utils::unzip(tmp,exdir = path)
+  }
+  readr::read_csv(file.path(path,dir(path,pattern="*data.csv")), col_types=readr::cols(.default="c")) %>%
+    dplyr::mutate_at(dplyr::vars(dplyr::matches("Dim: ",ignore.case=FALSE)),as.numeric)
+}
+
 #' Metro Vancouver land use data (2011 version)
 #' @param refresh if true, refresh the data
 #' @param cache_path directory for caching the data
