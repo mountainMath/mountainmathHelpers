@@ -9,6 +9,7 @@
 #' @export
 get_vector_tiles <- function(bbox,width=NULL,height=NULL,refresh=FALSE,
                              nextzen_api_key = getOption("nextzen_API_key")){
+  if (is.null(nextzen_api_key)) nextzen_api_key <- Sys.getenv("nextzen_API_key")
   orig_crs <- sf::st_crs(bbox)
   if (is.na(orig_crs$epsg) | orig_crs$epsg != 4236) {
     bbox <- bbox_to_polygon(bbox) %>%
@@ -69,6 +70,7 @@ geom_vector_tiles <- function(...,
                               nextzen_api_key = getOption("nextzen_API_key"),
                               tile_size_px=NULL,
                               transform=function(d)d){
+  if (is.null(nextzen_api_key)) nextzen_api_key <- Sys.getenv("nextzen_API_key")
   ggplot2::geom_sf(stat = StatVectorTiles,
           ...,
           type=type,
@@ -90,6 +92,7 @@ geom_roads <- function(..., color = "black", size = 0.1,
                        nextzen_api_key = getOption("nextzen_API_key"),
                        tile_size_px = NULL,
                        transform = function(d)d[d$kind!="ferry",]){
+  if (is.null(nextzen_api_key)) nextzen_api_key <- Sys.getenv("nextzen_API_key")
   geom_vector_tiles(...,type="roads", color = color, size = size,
                     nextzen_api_key = nextzen_api_key,
                     tile_size_px = tile_size_px, transform = transform)
@@ -108,6 +111,7 @@ geom_water <- function(..., fill = "lightblue", size = 0,
                        nextzen_api_key = getOption("nextzen_API_key"),
                        tile_size_px = NULL,
                        transform=function(d)d) {
+  if (is.null(nextzen_api_key)) nextzen_api_key <- Sys.getenv("nextzen_API_key")
   geom_vector_tiles(..., type="water",
                     fill = fill, size = size,
                     nextzen_api_key = nextzen_api_key,

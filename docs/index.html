@@ -74,27 +74,29 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install the development version from <a href="https://github.com/mountainMath/mountainmathHelpers">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"mountainMath/mountainmathHelpers"</span>)</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"mountainMath/mountainmathHelpers"</span><span class="op">)</span></pre></div>
 </div>
 <div id="vector-tile-example" class="section level2">
 <h2 class="hasAnchor">
 <a href="#vector-tile-example" class="anchor"></a>Vector tile example</h2>
 <p>It can be cumbersome to add nice background layers in ggplot maps. The <code>rmapzen</code> package provides convenient access to former Mapzen vector tiles, now hosted via NextZen. This package adds several <code>geom_xxx</code> functions to autmoatically fetch relevant vector tile data and add them to a map.</p>
 <p>Here is an example how to add water and road vector layers.</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">mountainmathHelpers</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">cancensus</span>)
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">ggplot2</span>)
+<div class="sourceCode" id="cb2"><pre class="downlit">
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mountainmathHelpers</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mountainMath/cancensus">cancensus</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 
-<span class="no">data</span> <span class="kw">&lt;-</span> <span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html">get_census</a></span>(<span class="st">"CA16"</span>,<span class="kw">regions</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="kw">CSD</span><span class="kw">=</span><span class="st">"5915022"</span>),<span class="kw">level</span><span class="kw">=</span><span class="st">"CT"</span>,<span class="kw">geo_format</span><span class="kw">=</span><span class="st">"sf"</span>,
-                   <span class="kw">vectors</span><span class="kw">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"lico"</span><span class="kw">=</span><span class="st">"v_CA16_2570"</span>))
+<span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://mountainmath.github.io/cancensus/index.html/reference/get_census.html">get_census</a></span><span class="op">(</span><span class="st">"CA16"</span>,regions<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>CSD<span class="op">=</span><span class="st">"5915022"</span><span class="op">)</span>,level<span class="op">=</span><span class="st">"CT"</span>,geo_format<span class="op">=</span><span class="st">"sf"</span>,
+                   vectors<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lico"</span><span class="op">=</span><span class="st">"v_CA16_2570"</span><span class="op">)</span><span class="op">)</span>
 
-<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="no">data</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span>(<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="kw">fill</span><span class="kw">=</span><span class="no">lico</span>/<span class="fl">100</span>),<span class="kw">size</span><span class="kw">=</span><span class="fl">0.1</span>) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span>(<span class="kw">labels</span><span class="kw">=</span><span class="kw pkg">scales</span><span class="kw ns">::</span><span class="no"><a href="https://scales.r-lib.org//reference/label_percent.html">percent</a></span>) +
-  <span class="fu"><a href="reference/geom_water.html">geom_water</a></span>() +
-  <span class="fu"><a href="reference/geom_roads.html">geom_roads</a></span>() +
-  <span class="fu"><a href="reference/coord_bbox.html">coord_bbox</a></span>(<span class="kw pkg">sf</span><span class="kw ns">::</span><span class="fu"><a href="https://rdrr.io/pkg/sf/man/st_bbox.html">st_bbox</a></span>(<span class="no">data</span>)) +
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span>(<span class="kw">title</span><span class="kw">=</span><span class="st">"Share of people in low income (LICO-AT)"</span>,<span class="kw">fill</span><span class="kw">=</span><span class="kw">NULL</span>)</pre></div>
+<span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">lico</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span>,size<span class="op">=</span><span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_fill_viridis_c</a></span><span class="op">(</span>labels<span class="op">=</span><span class="fu">scales</span><span class="fu">::</span><span class="va"><a href="https://scales.r-lib.org//reference/label_percent.html">percent</a></span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="reference/geom_water.html">geom_water</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="reference/geom_roads.html">geom_roads</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="reference/coord_bbox.html">coord_bbox</a></span><span class="op">(</span><span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title<span class="op">=</span><span class="st">"Share of people in low income (LICO-AT)"</span>,fill<span class="op">=</span><span class="cn">NULL</span><span class="op">)</span></pre></div>
 <p><img src="reference/figures/README-unnamed-chunk-2-1.png" width="100%"></p>
 </div>
 </div>
@@ -130,7 +132,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

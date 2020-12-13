@@ -11,3 +11,4 @@ images/*
 ^doc$
 ^LICENSE\.md$
 ^README\.Rmd$
+^\.github$
