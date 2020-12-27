@@ -43,13 +43,13 @@ StatVectorTiles <- ggplot2::ggproto("StatVectorTiles", ggplot2::Stat,
                          data <- sf::st_bbox(data)
                        }
 
-                       stopifnot("geom_roads needs sf or bbox object as data"=("bbox" %in% class(data)))
+                       stopifnot("geom_vector_tiles needs sf or bbox object as data"=("bbox" %in% class(data)))
                        if ("roads" %in% type) type="roads" else type=type[1]
                        bbox <- sf::st_bbox(data)
                        vector_tiles <- get_vector_tiles(bbox,tile_size_px,tile_size_px)
                        tile_data <- rmapzen::as_sf(vector_tiles[[type]])
                        orig_crs <- sf::st_crs(bbox)
-                       if (!is.na(orig_crs$epsg) & orig_crs$epsg != 4326) {
+                       if (is.na(orig_crs$epsg) | orig_crs$epsg != 4236) {
                          tile_data <- tile_data %>% sf::st_transform(orig_crs)
                        }
                        tile_data %>% transform
