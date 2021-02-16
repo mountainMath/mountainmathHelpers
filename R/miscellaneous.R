@@ -129,6 +129,10 @@ file_to_s3 <- function(path,s3_bucket,s3_path,content_type=NULL) {
       content_type='application/csv'
     } else if (endsWith(path,"zip")) {
       content_type='application/zip'
+    } else if (endsWith(path,"png")) {
+      content_type='image/png'
+    } else if (endsWith(path,"gif")) {
+      content_type='image/gif'
     } else {
       content_type='application/text'
     }
@@ -136,8 +140,8 @@ file_to_s3 <- function(path,s3_bucket,s3_path,content_type=NULL) {
   if (endsWith(s3_path,"/")) {
     s3_path=paste0(s3_path,basename(path))
   }
-  result <- aws.s3::put_object(path,s3_path,
-                               s3_bucket,
+  result <- aws.s3::put_object(file=path,object=s3_path,
+                               bucket=s3_bucket,
                                multipart = TRUE,
                                acl="public-read",
                                headers=list("Content-Type"=content_type))
