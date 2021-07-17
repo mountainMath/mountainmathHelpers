@@ -5,10 +5,7 @@
 
 <!-- badges: start -->
 
-[![Build
-Status](https://travis-ci.org/mountainMath/mountainmathHelpers.svg?branch=master)](https://travis-ci.org/mountainMath/mountainmathHelpers)
-[![R build
-status](https://github.com/mountainMath/mountainmathHelpers/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/mountainmathHelpers/actions)
+[![R-CMD-check](https://github.com/mountainMath/mountainmathHelpers/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/mountainmathHelpers/actions)
 <!-- badges: end -->
 
 MountainmathHelpers is a collection of helper functions that are

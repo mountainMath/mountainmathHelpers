@@ -48,16 +48,25 @@ get_2016_census_fsa_data <- function(cache_path=getOption("custom_data_path"),re
 }
 
 #' Metro Vancouver land use data (2011 version)
+#' @param vintage vintage of the data, valid parameters are 2016 and 2011
 #' @param refresh if true, refresh the data
 #' @param cache_path directory for caching the data
 #' @return an sf object with the metro vancouver land use data
 #' @export
-get_metro_vancouver_land_use_data <- function(cache_path=getOption("custom_data_path"),refresh=FALSE){
+get_metro_vancouver_land_use_data <- function(vintage="2016",cache_path=getOption("custom_data_path"),refresh=FALSE){
+  land_use_data <- NULL
+  if (as.character(vintage)=="2016"){
   land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2016.zip"),
                                "metro_van_land_use_data_2016",
                                path=cache_path,
                                refresh = refresh) %>%
     sf::st_sf()
+  } else if (as.character(vintage)=="2011") {
+    land_use_data <- sf::read_sf("https://s3.ca-central-1.amazonaws.com/mountainmath/data/Landuse2011.geojson")
+  } else {
+    stop("Invalid parameter for vintage.")
+  }
+  land_use_data
 }
 
 
