@@ -40,6 +40,7 @@ pretty_cut <- function(values,breaks,format=function(d)d,
     lapply(function(i){
       a=breaks[i]
       b=breaks[i+1]
+      if (is.integer(b)) b=b+1
       if (is.infinite(a) & a<0) {
         text=paste0(under_text,spacing,format(b))
       } else if (is.infinite(b) & b>0) {

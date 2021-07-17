@@ -53,8 +53,8 @@ get_2016_census_fsa_data <- function(cache_path=getOption("custom_data_path"),re
 #' @return an sf object with the metro vancouver land use data
 #' @export
 get_metro_vancouver_land_use_data <- function(cache_path=getOption("custom_data_path"),refresh=FALSE){
-  land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2011.zip"),
-                               "metro_van_land_use_data",
+  land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2016.zip"),
+                               "metro_van_land_use_data_2016",
                                path=cache_path,
                                refresh = refresh) %>%
     sf::st_sf()
