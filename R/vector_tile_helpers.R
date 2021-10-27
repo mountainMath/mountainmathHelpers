@@ -11,9 +11,9 @@ get_vector_tiles <- function(bbox,width=NULL,height=NULL,refresh=FALSE,
                              nextzen_api_key = getOption("nextzen_API_key")){
   if (is.null(nextzen_api_key)) nextzen_api_key <- Sys.getenv("nextzen_API_key")
   orig_crs <- sf::st_crs(bbox)
-  if (is.na(orig_crs$epsg) | orig_crs$epsg != 4236) {
+  if (is.na(orig_crs$epsg) | orig_crs$epsg != 4326) {
     bbox <- bbox_to_polygon(bbox) %>%
-      sf::st_transform(4236) %>%
+      sf::st_transform(4326) %>%
       sf::st_bbox()
   }
   mz_box=rmapzen::mz_rect(bbox$xmin,bbox$ymin,bbox$xmax,bbox$ymax)
@@ -49,7 +49,7 @@ StatVectorTiles <- ggplot2::ggproto("StatVectorTiles", ggplot2::Stat,
                        vector_tiles <- get_vector_tiles(bbox,tile_size_px,tile_size_px)
                        tile_data <- suppressMessages(rmapzen::as_sf(vector_tiles[[type]]))
                        orig_crs <- sf::st_crs(bbox)
-                       if (is.na(orig_crs$epsg) | orig_crs$epsg != 4236) {
+                       if (is.na(orig_crs$epsg) | orig_crs$epsg != 4326) {
                          tile_data <- tile_data %>% sf::st_transform(orig_crs)
                        }
                        tile_data %>% transform

@@ -72,7 +72,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">mountainmathHelpers</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.2</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.3</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@
     <p>transfer sf object to gzipped geojson file on aws s3</p>
     </div>
 
-    <pre class="usage"><span class='fu'>sf_to_s3_gzip</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>s3_bucket</span>, <span class='va'>s3_path</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>sf_to_s3_gzip</span><span class='op'>(</span><span class='va'>data</span>, <span class='va'>s3_bucket</span>, <span class='va'>s3_path</span>, precision <span class='op'>=</span> <span class='fl'>7</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -128,6 +128,10 @@
     <tr>
       <th>s3_path</th>
       <td><p>s3 path in bucket</p></td>
+    </tr>
+    <tr>
+      <th>precision</th>
+      <td><p>number of digits to write geojson</p></td>
     </tr>
     </table>
 

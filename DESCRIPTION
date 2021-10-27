@@ -1,14 +1,14 @@
 Package: mountainmathHelpers
 Type: Package
 Title: Helper Functions by MountainMath
-Version: 0.1.2
+Version: 0.1.3
 Author: Jens von Bergmann <jens@mountainmath.ca>
 Maintainer: Jens von Bergmann <jens@mountainmath.ca>
 Description: Various helper functions, including convenience geoms for adding vector tiles to a map plot.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Imports:
     dplyr,
     rlang,
@@ -23,7 +23,9 @@ Imports:
     readr,
     rmapzen,
     sf,
-    ggplot2
+    ggplot2,
+    mapboxapi,
+    slippymath
 Requires: 
     ggplot2,
     dplyr,

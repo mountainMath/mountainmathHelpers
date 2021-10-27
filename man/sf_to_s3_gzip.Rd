@@ -4,7 +4,7 @@
 \alias{sf_to_s3_gzip}
 \title{transfer sf object to gzipped geojson file on aws s3}
 \usage{
-sf_to_s3_gzip(data, s3_bucket, s3_path)
+sf_to_s3_gzip(data, s3_bucket, s3_path, precision = 7)
 }
 \arguments{
 \item{data}{sf object}
@@ -12,6 +12,8 @@ sf_to_s3_gzip(data, s3_bucket, s3_path)
 \item{s3_bucket}{s3 bucket name}
 
 \item{s3_path}{s3 path in bucket}
+
+\item{precision}{number of digits to write geojson}
 }
 \value{
 upload result (boolean)
