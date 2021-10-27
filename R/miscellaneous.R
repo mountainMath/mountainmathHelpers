@@ -76,8 +76,9 @@ bbox_to_polygon <- function(bbox){
 sf_to_s3_gzip <- function(data,s3_bucket,s3_path,precision=7) {
   tmp <- tempfile(fileext = ".geojson")
   data %>%
-    sf::st_set_precision(precision) %>%
-    sf::st_write(tmp,delete_dsn=file.exists(tmp))
+    geojsonsf::sf_geojson(digits=precision) %>%
+    write(tmp)
+    #sf::st_write(tmp,delete_dsn=file.exists(tmp))
   result <- file_to_s3_gzip(tmp,s3_bucket,s3_path)
   unlink(tmp)
   result

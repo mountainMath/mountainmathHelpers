@@ -25,7 +25,8 @@ Imports:
     sf,
     ggplot2,
     mapboxapi,
-    slippymath
+    slippymath,
+    geojsonsf
 Requires: 
     ggplot2,
     dplyr,
