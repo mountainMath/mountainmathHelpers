@@ -7,6 +7,7 @@
 #'
 #' @export
 geocode <- function(data,address_field="addressString",localities=NULL) {
+  if (nrow(data)==0) return(data)
   # api_key <- getOption("bc_geocoder_api_key") Not needed apparently
   base_url="https://apps.gov.bc.ca/pub/geocoder/addresses.csv"
   matchPrecision <- 'SITE, UNIT, CIVIC_NUMBER, INTERSECTION, BLOCK'
@@ -20,11 +21,11 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
 
   d <- data %>%
     dplyr::filter(is.na(.data$X)) %>%
-    dplyr::select(address_field) %>%
+    dplyr::select(dplyr::all_of(address_field)) %>%
     unique
 
   for (i in 1:nrow(data)) {
-    if ((!"X" %in% names(data)) || is.na(data[i,"X"])) {
+    if ((!("X" %in% names(data))) || is.na(data[i,"X"])) {
       address_string=data[[address_field]][i]
       if (!is.null(localities) && length(localities)==1 && localities[1]=="Vancouver")
         address_string=paste0(sub(",$","",sub(" #\\d+.*,",",",sub(" Vancouver.*$","",address_string))),", Vancouver, BC")
@@ -35,6 +36,7 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
       response<-httr::GET(base_url,query=query)
       if (response$status_code==200) {
         suppressMessages(suppressWarnings(r <- readr::read_csv(response$content)))
+        if (nrow(r)>0){
         data$X[i]=r$X
         data$Y[i]=r$Y
         data$score[i]=r$score
@@ -42,6 +44,7 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
         data$usedAddressString[i]=address_string
         data$fullAddress[i]=r$fullAddress
         data$faults[i]=r$faults
+        }
       }
     }
     if (i %% 100 ==0 ) print(paste0("Done with ",i,"/",nrow(data)))
