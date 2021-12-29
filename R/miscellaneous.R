@@ -157,14 +157,27 @@ file_to_s3 <- function(path,s3_bucket,s3_path,content_type=NULL) {
 #' download zipped shapefile and read shapefile.
 #' @param path URL string to zipped shape file
 #' @param file_mask optional grep string in case there are several shape files in the package
+#' @param cache_path optional path where to cache the shapefiles
+#' @param refresh optional, re-downloads shape file data if set to TRUE
 #' @return an sf object with the data from the shape file
 #' @export
-get_shapefile <- function(path,file_mask=NA){
-  tmp <- tempfile()
-  utils::download.file(path,tmp)
-  tmpdir <- tempdir()
-  fs<-utils::unzip(tmp,exdir=tmpdir)
-  file_names <- fs[grepl("\\.shp$",fs)]
+get_shapefile <- function(path,file_mask=NA,cache_path=NULL,refresh=FALSE){
+  store_permanently=!is.null(cache_path)
+  if (refresh || !store_permanently || !dir.exists(cache_path) || length(dir(cache_path))==0) {
+    if (!store_permanently) cache_path <- file.path(tempdir(),digest::digest(path))
+    if (dir.exists(cache_path)) {
+      if (!refresh && length(dir(cache_path))>0) stop("Cache path already exists")
+    } else {
+      dir.create(cache_path)
+    }
+    tmp <- tempfile()
+    utils::download.file(path,tmp)
+    fs<-utils::unzip(tmp,exdir=cache_path)
+    unlink(tmp)
+    file_names <- fs[grepl("\\.shp$",fs)]
+  } else {
+    file_names <- dir(cache_path,"\\.shp$",full.names = TRUE)
+  }
   if (is.na(file_mask)) {
     file_name=file_names[1]
   } else {
@@ -172,15 +185,13 @@ get_shapefile <- function(path,file_mask=NA){
     if (length(file_names)>1)file_names=file_names[1]
   }
   message_string <- paste0("Reading ",file_name,".")
-  if (length(file_names)>0) {
+  if (length(file_names)>1) {
     message_string <- paste0(message_string,"\nIgnoring ",
                              paste0(setdiff(file_names,file_name),collapse = ", "),".")
   }
   message(message_string)
   data <- sf::read_sf(file_name)
-  unlink(tmp)
-  unlink(fs)
-  #unlink(tmpdir,recursive = TRUE)
+  if (!store_permanently) unlink(fs)
   data
 }
 

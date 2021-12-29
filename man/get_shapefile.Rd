@@ -4,12 +4,16 @@
 \alias{get_shapefile}
 \title{download zipped shapefile and read shapefile.}
 \usage{
-get_shapefile(path, file_mask = NA)
+get_shapefile(path, file_mask = NA, cache_path = NULL, refresh = FALSE)
 }
 \arguments{
 \item{path}{URL string to zipped shape file}
 
 \item{file_mask}{optional grep string in case there are several shape files in the package}
+
+\item{cache_path}{optional path where to cache the shapefiles}
+
+\item{refresh}{optional, re-downloads shape file data if set to TRUE}
 }
 \value{
 an sf object with the data from the shape file
