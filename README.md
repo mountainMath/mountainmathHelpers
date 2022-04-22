@@ -9,10 +9,10 @@
 <!-- badges: end -->
 
 MountainmathHelpers is a collection of helper functions that are
-frequently used at MountainMath. This package can be used to access
-these functions, be it for reproducing and running code written by
-MountianMath or because they happen to be useful for whatever code
-others are writing.
+frequently used at [MountainMath](https::/mountainmath.ca). This package
+can be used to access these functions, be it for reproducing and running
+code written by MountianMath or because they happen to be useful for
+whatever code others are writing.
 
 ## Reference
 
@@ -52,7 +52,8 @@ ggplot(data) +
   geom_water() +
   geom_roads() +
   coord_bbox(sf::st_bbox(data)) +
-  labs(title="Share of people in low income (LICO-AT)",fill=NULL)
+  labs(title="Share of people in low income (LICO-AT)",fill=NULL,
+       caption="StatCan Census 2016")
 ```
 
 <img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />

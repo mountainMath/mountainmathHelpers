@@ -9,8 +9,11 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  message=FALSE,
+  warning = FALSE
 )
+ggplot2::theme_set(mountainmathHelpers::theme_mm())
 ```
 
 # mountainmathHelpers
@@ -19,9 +22,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/mountainMath/mountainmathHelpers/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/mountainmathHelpers/actions)
 <!-- badges: end -->
 
-MountainmathHelpers is a collection of helper functions that are frequently used at MountainMath. This package
-can be used to access these functions, be it for reproducing and running code written by MountianMath or
-because they happen to be useful for whatever code others are writing.
+MountainmathHelpers is a collection of helper functions that are frequently used at [MountainMath](https::/mountainmath.ca). This package can be used to access these functions, be it for reproducing and running code written by MountianMath or because they happen to be useful for whatever code others are writing.
 
 ## Reference
 [mountainmathHelpers home page and reference guide](https://mountainmath.github.io/mountainmathHelpers/)
@@ -41,7 +42,7 @@ It can be cumbersome to add nice background layers in ggplot maps. The `rmapzen`
 
 Here is an example how to add water and road vector layers.
 
-```{r message=FALSE}
+```{r}
 library(mountainmathHelpers)
 library(cancensus)
 library(ggplot2)
@@ -55,6 +56,7 @@ ggplot(data) +
   geom_water() +
   geom_roads() +
   coord_bbox(sf::st_bbox(data)) +
-  labs(title="Share of people in low income (LICO-AT)",fill=NULL)
+  labs(title="Share of people in low income (LICO-AT)",fill=NULL,
+       caption="StatCan Census 2016")
 ```
 
