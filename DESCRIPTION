@@ -36,5 +36,7 @@ Requires:
     aws.s3
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    patchwork,
+    png
 VignetteBuilder: knitr

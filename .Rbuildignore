@@ -12,3 +12,4 @@ images/*
 ^LICENSE\.md$
 ^README\.Rmd$
 ^\.github$
+logo.png
