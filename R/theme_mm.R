@@ -8,6 +8,8 @@ theme_mm <- function(background_colour = "#F8F4F0",...){
   ggplot2::theme_light() +
     ggplot2::theme(plot.title.position = "plot",
                    plot.caption.position = "plot",
+                   plot.title = element_text(hjust=0.5),
+                   plot.subtitle = element_text(hjust=0.5),
                    text = ggplot2::element_text(family = "Times New Roman"),
                    plot.caption = ggplot2::element_text(hjust=1),
                    plot.background = ggplot2::element_rect(fill=background_colour),  #F8F0F4
@@ -29,9 +31,9 @@ add_mm_logo <- function(){
 
   patchwork::inset_element(footer,
                            left= 0,
-                           bottom=-grid::unit(16, 'points'),
+                           bottom=-grid::unit(11, 'points'),
                            right=grid::unit(16, 'points'),
-                           top= 0,
+                           top= 5,
                            align_to = "plot",
                            clip = FALSE,
                            on_top = FALSE)
