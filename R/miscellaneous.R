@@ -171,7 +171,7 @@ get_shapefile <- function(path,file_mask=NA,cache_path=NULL,refresh=FALSE){
       dir.create(cache_path)
     }
     tmp <- tempfile()
-    utils::download.file(path,tmp)
+    utils::download.file(path,tmp, mode="wb")
     fs<-utils::unzip(tmp,exdir=cache_path)
     unlink(tmp)
     file_names <- fs[grepl("\\.shp$",fs)]
