@@ -4,12 +4,12 @@
 \alias{theme_mm}
 \title{MountainMath theme}
 \usage{
-theme_mm(background_colour = "#F8F4F0", ...)
+theme_mm(..., background_colour = "#F8F4F0")
 }
 \arguments{
-\item{background_colour}{Background colour for plot and panel}
-
 \item{...}{Additional parameters passed to theme()}
+
+\item{background_colour}{Background colour for plot and panel}
 }
 \value{
 A theme to be added to a ggplot object

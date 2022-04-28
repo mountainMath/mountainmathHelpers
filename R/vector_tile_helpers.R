@@ -36,10 +36,10 @@ StatVectorTiles <- ggplot2::ggproto("StatVectorTiles", ggplot2::Stat,
                      compute_panel = function(data, scales, type,
                                               nextzen_api_key = getOption("nextzen_API_key"),
                                               tile_size_px=NULL, transform=function(d)d) {
-                       if (class(data)=="data.frame") {
+                       if (inherits(data,"data.frame")) {
                          data <- sf::st_as_sf(data)
                        }
-                       if ("sf" %in% class(data)) {
+                       if (inherits(data,"sf")) {
                          data <- sf::st_bbox(data)
                        }
 

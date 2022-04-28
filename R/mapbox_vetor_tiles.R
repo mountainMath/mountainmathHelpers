@@ -54,10 +54,10 @@ StatMapboxVectorTiles <- ggplot2::ggproto("StatMapboxVectorTiles", ggplot2::Stat
                                     compute_panel = function(data, scales, type,
                                                              zoom = NULL, max_tiles = 5,
                                                              transform=function(d)d) {
-                                      if (class(data)=="data.frame") {
+                                      if (inherits(data,"data.frame")) {
                                         data <- sf::st_as_sf(data)
                                       }
-                                      if ("sf" %in% class(data)) {
+                                      if (inherits(data,"sf")) {
                                         data <- sf::st_bbox(data)
                                       }
 
