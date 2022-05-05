@@ -138,9 +138,11 @@ lambert_conformal_conic_at <- function(data,center=NULL){
   bbox <- data %>%
     sf::st_transform(4326) %>%
     sf::st_bbox()
-  c=list(X=as.numeric(bbox$xmin+bbox$xmax)/2,Y=as.numeric(bbox$ymin+bbox$ymax)/2)
-  proj4string <- paste0("+proj=lcc +lat_1=",bbox$ymin," +lat_2=",bbox$ymax," +lat_0=",c$Y,
-                        " +lon_0=",c$X," +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+  if (is.null(center)) {
+    center <- list(X=as.numeric(bbox$xmin+bbox$xmax)/2,Y=as.numeric(bbox$ymin+bbox$ymax)/2)
+  }
+  proj4string <- paste0("+proj=lcc +lat_1=",bbox$ymin," +lat_2=",bbox$ymax," +lat_0=",center$Y,
+                        " +lon_0=",center$X," +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
 
   sf::st_crs(proj4string)
 }
