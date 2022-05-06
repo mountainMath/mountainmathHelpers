@@ -147,6 +147,57 @@ lambert_conformal_conic_at <- function(data,center=NULL){
   sf::st_crs(proj4string)
 }
 
+#' Manipulates gemetries by group to make them suitable for faceting in a plot
+#'
+#' @description
+#' The data in each group will be transformed using a Lambert Equal Area Conic centred at the
+#' group's geometry and centered. The projection preserves area, so this is useful if area comparisons
+#' desired. Alternatively the `scale_to_fill``option can be used to scale the geometry to fill each
+#' facet to the specified `aspect_ratio`.
+#' @param data datafrae with the geometries
+#' @param ... arguments to group by, these should be the same arguments used for faceting
+#' @param scale_to_fill logical, will scale the geometries to fill each facet
+#' @param aspect_ratio the aspect ratio for each facet, only used if scale_to_fill is `TRUE`
+#' @export
+#' @return a data frame with transformed geometries and `NA` crs
+facet_transform_geos_by_group <- function(data,...,scale_to_fill=FALSE,aspect_ratio=1) {
+  data %>%
+    dplyr::group_by(...) %>%
+    dplyr::group_modify(.f = ~{
+      center <- .x %>%
+        sf::st_bbox() %>%
+        sf::st_as_sfc() %>%
+        sf::st_centroid() %>%
+        sf::st_transform(4326) %>%
+        sf::st_coordinates() %>%
+        as.list() %>%
+        stats::setNames(c("X","Y"))
+
+      proj4string <- paste0("+proj=leac +lat_1=",center$Y, " +lon_0=",center$X,
+                            " +x_0=0 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs")
+      g <- .x %>%
+        sf::st_transform(proj4string)
+
+      geometry_column <- attr(g,"sf_column")
+      bbox <- sf::st_bbox(g)
+      centre <- as.numeric(c(bbox$xmax+bbox$xmin,bbox$ymax+bbox$ymin)) /2
+      ar <- as.numeric((bbox$xmax-bbox$xmin)/(bbox$ymax-bbox$ymin))
+      if (!scale_to_fill) {
+        scale=1
+      } else if (ar>aspect_ratio) {
+        scale <- as.numeric(2/(bbox$xmax-bbox$xmin))
+      } else {
+        scale <- as.numeric(2/(bbox$ymax-bbox$ymin))
+      }
+      g <- g %>%
+        mutate(!!geometry_column:=(!!as.name(geometry_column)-centre)*scale)
+      g %>%
+        sf::st_set_crs(NA)
+    }) %>%
+    sf::st_sf() %>%
+    dplyr::ungroup()
+}
+
 
 #' Vector tiles for Metro Vancouver
 #' @param clipped should part of Nroth Shore mountains be clipped?

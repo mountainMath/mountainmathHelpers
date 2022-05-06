@@ -31,6 +31,9 @@
     <loc>/reference/cov_vector_tiles.html</loc>
   </url>
   <url>
+    <loc>/reference/facet_transform_geos_by_group.html</loc>
+  </url>
+  <url>
     <loc>/reference/file_to_s3.html</loc>
   </url>
   <url>
