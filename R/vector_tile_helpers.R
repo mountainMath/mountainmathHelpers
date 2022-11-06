@@ -98,6 +98,25 @@ geom_roads <- function(..., color = "black", size = 0.1,
                     tile_size_px = tile_size_px, transform = transform)
 }
 
+#' Adds a transit layer for the map
+#' @param color color for the transit lines
+#' @param size size of transit lines
+#' @param nextzen_api_key nextzen API key for vector tile data
+#' @param tile_size_px tile size in pixels, may increase resolution of tile data
+#' @param transform transform function to apply to the vector tile data, by default filter out ferry lines
+#' @param ... extra arguments
+#' @return a geom_sf object with the layer
+#' @export
+geom_transit <- function(..., color = "darkmagenta", size = 0.1,
+                       nextzen_api_key = getOption("nextzen_API_key"),
+                       tile_size_px = NULL,
+                       transform = function(d)d[d$kind %in% c("subway", "train"),]){
+  if (is.null(nextzen_api_key)) nextzen_api_key <- Sys.getenv("nextzen_API_key")
+  geom_vector_tiles(...,type="transit", color = color, size = size,
+                    nextzen_api_key = nextzen_api_key,
+                    tile_size_px = tile_size_px, transform = transform)
+}
+
 #' Adds a water layer for the map
 #' @param fill fill for the water featuers, default is `lightblue`
 #' @param size size of outline

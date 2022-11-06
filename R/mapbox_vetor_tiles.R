@@ -99,6 +99,9 @@ geom_mapbox_vector_tiles <- function(...,
                    transform=transform)
 }
 
+
+
+
 #' Adds a roads layer for the map
 #' @param color color for the roads
 #' @param size size of roads
@@ -109,8 +112,8 @@ geom_mapbox_vector_tiles <- function(...,
 #' @return a geom_sf object with the layer
 #' @export
 geom_mapbox_roads <- function(..., color = "black", size = 0.1,
-                       zoom = NULL, max_tiles = 5,
-                       transform = function(d)d[d$class %in% c("street","primary","secondary","tertiary","motorway"),]){
+                              zoom = NULL, max_tiles = 5,
+                              transform = function(d)d[d$class %in% c("street","primary","secondary","tertiary","motorway"),]){
   geom_mapbox_vector_tiles(...,type="road", color = color, size = size,
                            zoom=zoom, max_tiles = max_tiles,
                            transform = function(d)d$lines %>% transform)
