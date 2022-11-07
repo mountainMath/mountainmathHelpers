@@ -7,7 +7,7 @@
 geom_roads(
   ...,
   color = "black",
-  size = 0.1,
+  width = 0.1,
   nextzen_api_key = getOption("nextzen_API_key"),
   tile_size_px = NULL,
   transform = function(d) d[d$kind != "ferry", ]
@@ -18,7 +18,7 @@ geom_roads(
 
 \item{color}{color for the roads}
 
-\item{size}{size of roads}
+\item{width}{width of roads}
 
 \item{nextzen_api_key}{nextzen API key for vector tile data}
 

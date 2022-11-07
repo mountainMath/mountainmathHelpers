@@ -7,7 +7,7 @@
 geom_mapbox_roads(
   ...,
   color = "black",
-  size = 0.1,
+  width = 0.1,
   zoom = NULL,
   max_tiles = 5,
   transform = function(d) d[d$class \%in\% c("street", "primary", "secondary",
@@ -19,7 +19,7 @@ geom_mapbox_roads(
 
 \item{color}{color for the roads}
 
-\item{size}{size of roads}
+\item{width}{width of roads}
 
 \item{zoom}{optional, zoom level for tiles}
 

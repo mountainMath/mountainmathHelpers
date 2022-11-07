@@ -7,7 +7,7 @@
 geom_transit(
   ...,
   color = "darkmagenta",
-  size = 0.1,
+  width = 0.1,
   nextzen_api_key = getOption("nextzen_API_key"),
   tile_size_px = NULL,
   transform = function(d) d[d$kind \%in\% c("subway", "train"), ]
@@ -18,7 +18,7 @@ geom_transit(
 
 \item{color}{color for the transit lines}
 
-\item{size}{size of transit lines}
+\item{width}{width of transit lines}
 
 \item{nextzen_api_key}{nextzen API key for vector tile data}
 

@@ -7,7 +7,7 @@
 geom_mapbox_water(
   ...,
   fill = "lightblue",
-  size = 0,
+  width = 0,
   zoom = NULL,
   max_tiles = 5,
   transform = function(d) d
@@ -18,7 +18,7 @@ geom_mapbox_water(
 
 \item{fill}{fill for the water featuers, default is `lightblue`}
 
-\item{size}{size of outline}
+\item{width}{width of outline}
 
 \item{zoom}{optional, zoom level for tiles}
 

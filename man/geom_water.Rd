@@ -7,7 +7,7 @@
 geom_water(
   ...,
   fill = "lightblue",
-  size = 0,
+  width = 0,
   nextzen_api_key = getOption("nextzen_API_key"),
   tile_size_px = NULL,
   transform = function(d) d
@@ -18,7 +18,7 @@ geom_water(
 
 \item{fill}{fill for the water featuers, default is `lightblue`}
 
-\item{size}{size of outline}
+\item{width}{width of outline}
 
 \item{nextzen_api_key}{nextzen API key for vector tile data}
 

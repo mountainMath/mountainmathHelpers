@@ -104,35 +104,35 @@ geom_mapbox_vector_tiles <- function(...,
 
 #' Adds a roads layer for the map
 #' @param color color for the roads
-#' @param size size of roads
+#' @param width width of roads
 #' @param zoom optional, zoom level for tiles
 #' @param max_tiles Maximum number of tiles to query, overrides desired zoom level.
 #' @param transform transform function to apply to the vector tile data, by default filter out ferry lines
 #' @param ... extra arguments
 #' @return a geom_sf object with the layer
 #' @export
-geom_mapbox_roads <- function(..., color = "black", size = 0.1,
+geom_mapbox_roads <- function(..., color = "black", width = 0.1,
                               zoom = NULL, max_tiles = 5,
                               transform = function(d)d[d$class %in% c("street","primary","secondary","tertiary","motorway"),]){
-  geom_mapbox_vector_tiles(...,type="road", color = color, size = size,
+  geom_mapbox_vector_tiles(...,type="road", color = color, linewidth = width,
                            zoom=zoom, max_tiles = max_tiles,
                            transform = function(d)d$lines %>% transform)
 }
 
 #' Adds a water layer for the map
 #' @param fill fill for the water featuers, default is `lightblue`
-#' @param size size of outline
+#' @param width width of outline
 #' @param zoom optional, zoom level for tiles
 #' @param max_tiles Maximum number of tiles to query, overrides desired zoom level.
 #' @param transform transform function to apply to the vector tile data
 #' @param ... extra arguments
 #' @return a geom_sf object with the layer
 #' @export
-geom_mapbox_water <- function(..., fill = "lightblue", size = 0,
+geom_mapbox_water <- function(..., fill = "lightblue", width = 0,
                               zoom = NULL, max_tiles = 5,
                               transform=function(d)d) {
   geom_mapbox_vector_tiles(..., type="water",
-                    fill = fill, size = size,
+                    fill = fill, linewidth = width,
                     zoom = zoom, max_tiles = max_tiles,
                     transform = function(d)d %>%
                       transform %>%
