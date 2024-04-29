@@ -17,6 +17,7 @@ theme_mm <- function(...,background_colour = "#F8F4F0"){
                    legend.background = ggplot2::element_rect(fill=background_colour),
                    #legend.box.background = ggplot2::element_rect(fill=background_colour),
                    legend.key = ggplot2::element_rect(fill=background_colour),
+                   strip.background=ggplot2::element_rect(fill="#606060"),
                    panel.grid.major = ggplot2::element_line(colour="grey")) +
     ggplot2::theme(...)
 }
