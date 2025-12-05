@@ -53,15 +53,21 @@ get_2016_census_fsa_data <- function(cache_path=getOption("custom_data_path"),re
 #' @param cache_path directory for caching the data
 #' @return an sf object with the metro vancouver land use data
 #' @export
-get_metro_vancouver_land_use_data <- function(vintage="2016",cache_path=getOption("custom_data_path"),refresh=FALSE){
+get_metro_vancouver_land_use_data <- function(vintage="2016.v20230517",cache_path=getOption("custom_data_path"),refresh=FALSE){
   land_use_data <- NULL
-  if (as.character(vintage)=="2016"){
-  land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2016.zip"),
-                               "metro_van_land_use_data_2016",
-                               path=cache_path,
-                               refresh = refresh) %>%
-    sf::st_sf()
-  } else if (as.character(vintage)=="2011") {
+  if (as.character(vintage)=="2016.v20230517"){
+    land_use_data <- simpleCache(get_shapefile("https://services6.arcgis.com/56eqCzQ5SZhBaDST/arcgis/rest/services/Landuse_2016___Code_Description_No_Outlines/FeatureServer/replicafilescache/Landuse_2016___Code_Description_No_Outlines_2287993240207701109.zip"),
+                                 "metro_van_land_use_data_2016.v20230517",
+                                 path=cache_path,
+                                 refresh = refresh) %>%
+      sf::st_sf()
+  } else if (as.character(vintage)=="2016"){
+      land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2016.zip"),
+                                   "metro_van_land_use_data_2016",
+                                   path=cache_path,
+                                   refresh = refresh) %>%
+        sf::st_sf()
+    } else if (as.character(vintage)=="2011") {
     land_use_data <- sf::read_sf("https://s3.ca-central-1.amazonaws.com/mountainmath/data/Landuse2011.geojson")
   } else {
     stop("Invalid parameter for vintage.")

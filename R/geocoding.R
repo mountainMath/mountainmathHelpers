@@ -9,7 +9,7 @@
 geocode <- function(data,address_field="addressString",localities=NULL) {
   if (nrow(data)==0) return(data)
   # api_key <- getOption("bc_geocoder_api_key") Not needed apparently
-  base_url="https://apps.gov.bc.ca/pub/geocoder/addresses.csv"
+  base_url="https://geocoder.api.gov.bc.ca/addresses.json"
   matchPrecision <- 'SITE, UNIT, CIVIC_NUMBER, INTERSECTION, BLOCK'
   new_fields <- c("X","Y","matchPrecision","score","usedAddressString","faults","fullAddress")
   match_fields <- intersect(names(data),new_fields)
@@ -35,15 +35,22 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
       if (!is.null(localities) && length(localities)>0) query["localities"]=localities
       response<-httr::GET(base_url,query=query)
       if (response$status_code==200) {
-        suppressMessages(suppressWarnings(r <- readr::read_csv(response$content)))
+        # suppressMessages(suppressWarnings(r <- readr::read_csv(response$content)))
+        features <- httr::content(response)$features
+        r <- features |>
+          purrr::map_dfr(\(f)as.data.frame(f$properties) |>
+                           dplyr::mutate(X=f$geometry$coordinates[[1]],
+                                  Y=f$geometry$coordinates[[2]])) |>
+          tibble::as_tibble()
         if (nrow(r)>0){
+          r <- r[1,]
         data$X[i]=r$X
         data$Y[i]=r$Y
         data$score[i]=r$score
         data$matchPrecision[i]=r$matchPrecision
         data$usedAddressString[i]=address_string
         data$fullAddress[i]=r$fullAddress
-        data$faults[i]=r$faults
+        data$faults[i]=paste0(r$faults.element," ", r$faults.fault)
         }
       }
     }
