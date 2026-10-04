@@ -30,9 +30,8 @@ r2_filesystem <- function(){
                              region="auto")
 }
 
-# delete object via the S3 compatible API
-# the arrow filesystem is not used for this as it leaves empty directory marker objects behind when deleting files
-r2_delete_object <- function(r2_bucket,r2_path,datetime=format(Sys.time(),"%Y%m%dT%H%M%SZ",tz="UTC")){
+# signed request for an object via the S3 compatible API, for requests without body
+r2_object_request <- function(verb,r2_bucket,r2_path,datetime=format(Sys.time(),"%Y%m%dT%H%M%SZ",tz="UTC")){
   credentials <- r2_credentials(c("R2_ACCESS_KEY_ID","R2_SECRET_ACCESS_KEY"))
   endpoint <- r2_endpoint()
   path <- paste0("/",r2_bucket,"/",
@@ -41,21 +40,36 @@ r2_delete_object <- function(r2_bucket,r2_path,datetime=format(Sys.time(),"%Y%m%
                   "x-amz-content-sha256"=digest::digest("",algo="sha256",serialize=FALSE),
                   "x-amz-date"=datetime)
   signature <- aws.signature::signature_v4_auth(datetime=datetime,region="auto",service="s3",
-                                                verb="DELETE",action=path,
+                                                verb=verb,action=path,
                                                 canonical_headers=headers,request_body="",
                                                 key=credentials[["R2_ACCESS_KEY_ID"]],
                                                 secret=credentials[["R2_SECRET_ACCESS_KEY"]],
                                                 force_credentials=TRUE)
-  response <- httr::DELETE(paste0(endpoint,path),
-                           httr::add_headers("x-amz-content-sha256"=headers[["x-amz-content-sha256"]],
-                                             "x-amz-date"=datetime,
-                                             Authorization=paste0("AWS4-HMAC-SHA256 Credential=",signature$Credential,
-                                                                  ", SignedHeaders=",signature$SignedHeaders,
-                                                                  ", Signature=",signature$Signature)))
+  httr::VERB(verb,paste0(endpoint,path),
+             httr::add_headers("x-amz-content-sha256"=headers[["x-amz-content-sha256"]],
+                               "x-amz-date"=datetime,
+                               Authorization=paste0("AWS4-HMAC-SHA256 Credential=",signature$Credential,
+                                                    ", SignedHeaders=",signature$SignedHeaders,
+                                                    ", Signature=",signature$Signature)))
+}
+
+# delete object via the S3 compatible API
+# the arrow filesystem is not used for this as it leaves empty directory marker objects behind when deleting files
+r2_delete_object <- function(r2_bucket,r2_path){
+  response <- r2_object_request("DELETE",r2_bucket,r2_path)
   if (httr::status_code(response)>=400) {
     stop(paste0("Removing ",r2_path," from R2 bucket ",r2_bucket," failed with status ",httr::status_code(response),". ",
                 httr::content(response,"text",encoding="UTF-8")))
   }
+}
+
+# check if there is an object, as opposed to a directory, at the path
+r2_object_exists <- function(r2_bucket,r2_path){
+  status <- httr::status_code(r2_object_request("HEAD",r2_bucket,r2_path))
+  if (status>=400 && status!=404) {
+    stop(paste0("Checking ",r2_path," in R2 bucket ",r2_bucket," failed with status ",status,"."))
+  }
+  status<400
 }
 
 # call the Cloudflare API for R2 buckets, needed for bucket settings not available via the S3 compatible API
@@ -205,9 +219,11 @@ remove_parquet_from_r2 <- function(r2_bucket,r2_path) {
 }
 
 # path or glob pattern matching the parquet file or all parquet files in the directory
-r2_parquet_glob <- function(r2_path){
+# directories of parquet files are commonly named like a parquet file, so paths ending in .parquet get checked
+r2_parquet_glob <- function(r2_bucket,r2_path){
+  is_directory <- endsWith(r2_path,"/")
   r2_path <- sub("/+$","",sub("^/+","",r2_path))
-  if (!grepl("\\.parquet$",r2_path)) {
+  if (is_directory || !grepl("\\.parquet$",r2_path) || !r2_object_exists(r2_bucket,r2_path)) {
     r2_path <- paste0(r2_path,if (r2_path!="") "/","**/*.parquet")
   }
   r2_path
@@ -253,7 +269,9 @@ r2_duckdb_connection <- function(refresh=FALSE) {
     DBI::dbExecute(con,paste0("CREATE OR REPLACE SECRET r2 (TYPE r2",
                               ", KEY_ID ",DBI::dbQuoteString(con,credentials[["R2_ACCESS_KEY_ID"]]),
                               ", SECRET ",DBI::dbQuoteString(con,credentials[["R2_SECRET_ACCESS_KEY"]]),
-                              ", ACCOUNT_ID ",DBI::dbQuoteString(con,credentials[["R2_ACCOUNT_ID"]]),")"))
+                              ", ACCOUNT_ID ",DBI::dbQuoteString(con,credentials[["R2_ACCOUNT_ID"]]),
+                              # without this the region gets picked up from AWS_DEFAULT_REGION if set, which R2 rejects
+                              ", REGION 'auto')"))
     # avoids downloading the parquet file footers again for every query
     DBI::dbExecute(con,"SET parquet_metadata_cache = true")
     r2_cache$duckdb_connection <- con
@@ -278,7 +296,35 @@ r2_duckdb_connection <- function(refresh=FALSE) {
 #' @return a lazy `dplyr` table
 #' @export
 r2_parquet_tbl <- function(r2_bucket,r2_path,hive_partitioning=TRUE,con=r2_duckdb_connection()) {
-  duckdb_parquet_tbl(con,paste0("r2://",r2_bucket,"/",r2_parquet_glob(r2_path)),hive_partitioning=hive_partitioning)
+  duckdb_parquet_tbl(con,paste0("r2://",r2_bucket,"/",r2_parquet_glob(r2_bucket,r2_path)),hive_partitioning=hive_partitioning)
+}
+
+#' lazy arrow dataset to query parquet files on Cloudflare R2
+#'
+#' @description
+#' Arrow `Dataset` reading directly from R2, no data is downloaded until the query is executed,
+#' e.g. via `dplyr::collect()`. The dataset can be queried with `dplyr` verbs. Filters on partition columns
+#' restrict which files are read, other filters and the selection of columns restrict which parts of the files
+#' are downloaded. Opening the dataset lists the files and reads the schema from the first file.
+#' See `r2_parquet_tbl` for a version using DuckDB and `r2_parquet_polars` for a version using polars.
+#' Expects the R2 account id and the access key id and secret access key
+#' of an R2 API token to be available as `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
+#' environment variables.
+#'
+#' @param r2_bucket R2 bucket name
+#' @param r2_path path in bucket of the parquet file, or of the directory with (partitioned) parquet files
+#' @param hive_partitioning if `TRUE`, the default, partition columns get derived from `key=value` components of the file paths
+#' @return an arrow `Dataset`
+#' @export
+r2_parquet_arrow <- function(r2_bucket,r2_path,hive_partitioning=TRUE) {
+  if (!requireNamespace("arrow",quietly=TRUE)) {
+    stop("The arrow package is required to query R2 with arrow.")
+  }
+  r2_path <- sub("/+$","",sub("^/+","",r2_path))
+  arrow::open_dataset(paste0(r2_bucket,if (r2_path!="") "/",r2_path),
+                      filesystem=r2_filesystem(),
+                      format="parquet",
+                      partitioning=if (hive_partitioning) arrow::hive_partition() else NULL)
 }
 
 #' lazy polars frame to query parquet files on Cloudflare R2
@@ -290,7 +336,8 @@ r2_parquet_tbl <- function(r2_bucket,r2_path,hive_partitioning=TRUE,con=r2_duckd
 #' are downloaded. With the `tidypolars` package loaded the `LazyFrame` can be queried with `dplyr` verbs,
 #' ending in `dplyr::collect()`. When filtering on integer columns use integer values like `2021L`, comparing to
 #' a plain number like `2021` casts the column to a floating point number and polars then downloads all rows of
-#' the selected columns before filtering. See `r2_parquet_tbl` for a version using DuckDB.
+#' the selected columns before filtering. See `r2_parquet_tbl` for a version using DuckDB
+#' and `r2_parquet_arrow` for a version using arrow.
 #' Expects the R2 account id and the access key id and secret access key
 #' of an R2 API token to be available as `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
 #' environment variables.
@@ -305,7 +352,7 @@ r2_parquet_polars <- function(r2_bucket,r2_path,hive_partitioning=TRUE) {
     stop("The polars package is required to query R2 with polars.")
   }
   credentials <- r2_credentials(c("R2_ACCESS_KEY_ID","R2_SECRET_ACCESS_KEY"))
-  polars::pl$scan_parquet(paste0("s3://",r2_bucket,"/",r2_parquet_glob(r2_path)),
+  polars::pl$scan_parquet(paste0("s3://",r2_bucket,"/",r2_parquet_glob(r2_bucket,r2_path)),
                           hive_partitioning=hive_partitioning,
                           storage_options=c(aws_access_key_id=credentials[["R2_ACCESS_KEY_ID"]],
                                             aws_secret_access_key=credentials[["R2_SECRET_ACCESS_KEY"]],

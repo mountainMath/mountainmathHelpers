@@ -23,7 +23,8 @@ restrict which files are read, other filters and the selection of columns restri
 are downloaded. With the `tidypolars` package loaded the `LazyFrame` can be queried with `dplyr` verbs,
 ending in `dplyr::collect()`. When filtering on integer columns use integer values like `2021L`, comparing to
 a plain number like `2021` casts the column to a floating point number and polars then downloads all rows of
-the selected columns before filtering. See `r2_parquet_tbl` for a version using DuckDB.
+the selected columns before filtering. See `r2_parquet_tbl` for a version using DuckDB
+and `r2_parquet_arrow` for a version using arrow.
 Expects the R2 account id and the access key id and secret access key
 of an R2 API token to be available as `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
 environment variables.
