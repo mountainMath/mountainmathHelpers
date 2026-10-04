@@ -13,3 +13,4 @@ images/*
 ^README\.Rmd$
 ^\.github$
 logo.png
+^CLAUDE\.md$

@@ -8,12 +8,12 @@ Description: Various helper functions, including convenience geoms for adding ve
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
 Imports:
     dplyr,
     rlang,
     R.utils,
     aws.s3,
+    aws.signature,
     digest,
     httr,
     jsonlite,
@@ -35,5 +35,12 @@ Suggests:
     knitr,
     rmarkdown,
     patchwork,
-    png
+    png,
+    arrow,
+    duckdb,
+    DBI,
+    dbplyr,
+    polars
+Additional_repositories: https://community.r-multiverse.org
 VignetteBuilder: knitr
+Config/roxygen2/version: 8.1.0
