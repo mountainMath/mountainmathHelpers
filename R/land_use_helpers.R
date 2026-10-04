@@ -53,7 +53,7 @@ get_2016_census_fsa_data <- function(cache_path=getOption("custom_data_path"),re
 #' @param cache_path directory for caching the data
 #' @return an sf object with the metro vancouver land use data
 #' @export
-get_metro_vancouver_land_use_data <- function(vintage="2016.v20230517",cache_path=getOption("custom_data_path"),refresh=FALSE){
+get_metro_vancouver_land_use_data <- function(vintage="2016.v2026",cache_path=getOption("custom_data_path"),refresh=FALSE){
   land_use_data <- NULL
   if (as.character(vintage)=="2016.v20230517"){
     land_use_data <- simpleCache(get_shapefile("https://services6.arcgis.com/56eqCzQ5SZhBaDST/arcgis/rest/services/Landuse_2016___Code_Description_No_Outlines/FeatureServer/replicafilescache/Landuse_2016___Code_Description_No_Outlines_2287993240207701109.zip"),
@@ -62,19 +62,26 @@ get_metro_vancouver_land_use_data <- function(vintage="2016.v20230517",cache_pat
                                  refresh = refresh) %>%
       sf::st_sf()
   } else if (as.character(vintage)=="2016"){
-      land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2016.zip"),
-                                   "metro_van_land_use_data_2016",
-                                   path=cache_path,
-                                   refresh = refresh) %>%
-        sf::st_sf()
-    } else if (as.character(vintage)=="2011") {
+    land_use_data <- simpleCache(get_shapefile("http://www.metrovancouver.org/data/Data/LandUse/Landuse2016.zip"),
+                                 "metro_van_land_use_data_2016",
+                                 path=cache_path,
+                                 refresh = refresh) %>%
+      sf::st_sf()
+  } else if (as.character(vintage)=="2011") {
     land_use_data <- sf::read_sf("https://s3.ca-central-1.amazonaws.com/mountainmath/data/Landuse2011.geojson")
+  } else if (substr(vintage,1,5)=="2016.") {
+    url <- "https://services6.arcgis.com/56eqCzQ5SZhBaDST/arcgis/rest/services/Landuse_2016___Code_Description_No_Outlines/FeatureServer/1/query?where=1%3D1&outFields=*&f=json"
+    #url <- "https://stg-arcgisazurecdataprod6.az.arcgis.com/exportfiles-86184-19/Landuse_2016___Code_Description_No_Outlines_8865431849988744819.zip"
+    land_use_data <- simpleCache(sf::read_sf(url) |> sf::st_make_valid(),
+                                 paste0("metro_van_land_use_data_",vintage),
+                                 path=cache_path,
+                                 refresh = refresh) %>%
+      sf::st_sf()
   } else {
     stop("Invalid parameter for vintage.")
   }
   land_use_data
 }
-
 
 #' Geographic attribute data with DA representative points (2016 census version)
 #' @param refresh if true, refresh the data

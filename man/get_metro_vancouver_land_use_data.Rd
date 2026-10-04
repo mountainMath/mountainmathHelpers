@@ -5,7 +5,7 @@
 \title{Metro Vancouver land use data (2011 version)}
 \usage{
 get_metro_vancouver_land_use_data(
-  vintage = "2016",
+  vintage = "2016.v2026",
   cache_path = getOption("custom_data_path"),
   refresh = FALSE
 )
