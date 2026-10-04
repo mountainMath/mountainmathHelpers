@@ -1,13 +1,12 @@
 #' Get vector tile data
 #'
 #' @description
-#' expects mapzen API key being available as MAPBOX_PUBLIC_TOKEN environment variable
+#' expects Mapbox access token being available as MAPBOX_PUBLIC_TOKEN environment variable
 #'
 #' @param bbox bounding box for which to get vector tile data
 #' @param tileset_id Mapbox tileset ID, default is "mapbox.mapbox-streets-v8"
 #' @param zoom optional, zoom level for tiles
 #' @param max_tiles Maximum number of tiles to query, overrides desired zoom level.
-#' @param bbox bounding box for which to get vector tile data
 #' @param refresh results are cached for current session, optionally refresh cache
 #' @return a list of layers with vector tile data
 #' @export
@@ -32,7 +31,7 @@ get_mapbox_vector_tiles <- function(bbox,
     zoom=max(c$zoom)
   }
 
-  digest_id <- c %>% dplyr::filter(.data$zoom==!!zoom) %>% as.list() %>% digest::digest()
+  digest_id <- list(tileset_id,c %>% dplyr::filter(.data$zoom==!!zoom) %>% as.list()) %>% digest::digest()
   digest <- paste0("mapbox_vector_tiles_",digest_id,".Rda")
 
   path=file.path(tempdir(),digest)
@@ -61,8 +60,8 @@ StatMapboxVectorTiles <- ggplot2::ggproto("StatMapboxVectorTiles", ggplot2::Stat
                                         data <- sf::st_bbox(data)
                                       }
 
-                                      stopifnot("geom_vector_tiles needs sf or bbox object as data"=("bbox" %in% class(data)))
-                                      if ("roads" %in% type) type="roads" else type=type[1]
+                                      stopifnot("geom_mapbox_vector_tiles needs sf or bbox object as data"=("bbox" %in% class(data)))
+                                      type=type[1]
                                       bbox <- sf::st_bbox(data)
                                       vector_tiles <- get_mapbox_vector_tiles(bbox=bbox,zoom=zoom,max_tiles = max_tiles)
                                       tile_data <- vector_tiles[[type]]

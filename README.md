@@ -9,7 +9,7 @@
 <!-- badges: end -->
 
 MountainmathHelpers is a collection of helper functions that are
-frequently used at [MountainMath](https::/mountainmath.ca). This package
+frequently used at [MountainMath](https://mountainmath.ca). This package
 can be used to access these functions, be it for reproducing and running
 code written by MountianMath or because they happen to be useful for
 whatever code others are writing.

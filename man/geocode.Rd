@@ -7,7 +7,8 @@
 geocode(data, address_field = "addressString", localities = NULL)
 }
 \arguments{
-\item{data}{data frame with rows to be geocoded}
+\item{data}{data frame with rows to be geocoded, rows that already have `X` filled are skipped
+so that partially geocoded data can be passed back in to resume}
 
 \item{address_field}{column in data frame that contains the address string}
 

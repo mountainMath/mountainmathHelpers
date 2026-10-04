@@ -4,11 +4,18 @@
 \alias{add_mm_logo}
 \title{MountainMath logo}
 \usage{
-add_mm_logo()
+add_mm_logo(size = 14)
+}
+\arguments{
+\item{size}{height of the logo in points}
 }
 \value{
 A theme to be added to a ggplot object
 }
 \description{
-MountainMath logo
+Adds the MountainMath logo to the bottom left corner of the graph. The logo is drawn into the caption row
+that spans the bottom of the graph below axis titles and legends, with the caption text staying right aligned.
+Graphs without a caption get a caption row just high enough to hold the logo.
+This sets the `plot.caption` theme element, so it needs to be added after `theme_mm()` and after
+any other theme adjustments to the caption.
 }

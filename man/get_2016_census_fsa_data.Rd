@@ -10,9 +10,9 @@ get_2016_census_fsa_data(
 )
 }
 \arguments{
-\item{cache_path}{directory for caching the data}
+\item{cache_path}{directory for caching the data, required, defaults to the `custom_data_path` option}
 
-\item{refresh}{if true, refresh the data}
+\item{refresh}{if true, download the data again and replace the cached version}
 }
 \value{
 an tibble with the 2016 FSA data

@@ -27,5 +27,5 @@ get_mapbox_vector_tiles(
 a list of layers with vector tile data
 }
 \description{
-expects mapzen API key being available as MAPBOX_PUBLIC_TOKEN environment variable
+expects Mapbox access token being available as MAPBOX_PUBLIC_TOKEN environment variable
 }

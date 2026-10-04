@@ -10,9 +10,9 @@ get_statcan_geographic_attribute_data(
 )
 }
 \arguments{
-\item{cache_path}{directory for caching the data}
+\item{cache_path}{directory for caching the data, required, defaults to the `custom_data_path` option}
 
-\item{refresh}{if true, refresh the data}
+\item{refresh}{if true, download the data again and replace the cached version}
 }
 \value{
 an sf object with the representative point data

@@ -1,8 +1,7 @@
 #' Get vector tile data, expects option variable nextzen_API_key to be set
 #' @param bbox bounding box for which to get vector tile data
 #' @param width optional, width in pixels for the display image
-#' @param height optional, width in height for the display image
-#' @param bbox bounding box for which to get vector tile data
+#' @param height optional, height in pixels for the display image
 #' @param refresh results are cached for current session, optionally refresh cache
 #' @param nextzen_api_key nextzen API key for vector tile data
 #' @return a list of layers with vector tile data
@@ -46,7 +45,7 @@ StatVectorTiles <- ggplot2::ggproto("StatVectorTiles", ggplot2::Stat,
                        stopifnot("geom_vector_tiles needs sf or bbox object as data"=("bbox" %in% class(data)))
                        if ("roads" %in% type) type="roads" else type=type[1]
                        bbox <- sf::st_bbox(data)
-                       vector_tiles <- get_vector_tiles(bbox,tile_size_px,tile_size_px)
+                       vector_tiles <- get_vector_tiles(bbox,tile_size_px,tile_size_px,nextzen_api_key=nextzen_api_key)
                        tile_data <- suppressMessages(rmapzen::as_sf(vector_tiles[[type]]))
                        orig_crs <- sf::st_crs(bbox)
                        if (is.na(orig_crs$epsg) | orig_crs$epsg != 4326) {
@@ -209,7 +208,7 @@ facet_transform_geos_by_group <- function(data,...,scale_to_fill=FALSE,aspect_ra
         scale <- as.numeric(2/(bbox$ymax-bbox$ymin))
       }
       g <- g %>%
-        mutate(!!geometry_column:=(!!as.name(geometry_column)-centre)*scale)
+        dplyr::mutate(!!geometry_column:=(!!as.name(geometry_column)-centre)*scale)
       g %>%
         sf::st_set_crs(NA)
     }) %>%

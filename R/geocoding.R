@@ -1,5 +1,6 @@
 #' Use BC Geocoder to geocode addresses. This is slow, goes through address list one by one
-#' @param data data frame with rows to be geocoded
+#' @param data data frame with rows to be geocoded, rows that already have `X` filled are skipped
+#' so that partially geocoded data can be passed back in to resume
 #' @param address_field column in data frame that contains the address string
 #' @param localities optional array of locality names to restrict search to
 #' @return data frame with `X`, `Y` columns for longitude and latitude, as well as
@@ -13,16 +14,12 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
   matchPrecision <- 'SITE, UNIT, CIVIC_NUMBER, INTERSECTION, BLOCK'
   new_fields <- c("X","Y","matchPrecision","score","usedAddressString","faults","fullAddress")
   match_fields <- intersect(names(data),new_fields)
-  if (length(match_fields)>0) {
-    warning(paste0("Will overwrite fieds ",match_fields %>% paste0(collapse = ", ")))
+  # rows with X filled are skipped, so existing fields only get overwritten wholesale if there is no X column
+  if (length(match_fields)>0 && !("X" %in% match_fields)) {
+    warning(paste0("Will overwrite fields ",match_fields %>% paste0(collapse = ", ")))
   }
   missing_fields <- setdiff(new_fields,names(data))
   for (field in missing_fields) data[,field]=NA
-
-  d <- data %>%
-    dplyr::filter(is.na(.data$X)) %>%
-    dplyr::select(dplyr::all_of(address_field)) %>%
-    unique
 
   for (i in 1:nrow(data)) {
     if ((!("X" %in% names(data))) || is.na(data[i,"X"])) {
@@ -32,13 +29,14 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
       query=list(addressString=address_string,
                  matchPrecision=matchPrecision,
                  provinceCode="BC")
-      if (!is.null(localities) && length(localities)>0) query["localities"]=localities
+      if (!is.null(localities) && length(localities)>0) query["localities"]=paste0(localities,collapse=",")
       response<-httr::GET(base_url,query=query)
       if (response$status_code==200) {
         # suppressMessages(suppressWarnings(r <- readr::read_csv(response$content)))
         features <- httr::content(response)$features
+        # drop empty properties, e.g. faults for clean matches, they can't be converted to data frame columns
         r <- features |>
-          purrr::map_dfr(\(f)as.data.frame(f$properties) |>
+          purrr::map_dfr(\(f)as.data.frame(f$properties[lengths(f$properties)>0]) |>
                            dplyr::mutate(X=f$geometry$coordinates[[1]],
                                   Y=f$geometry$coordinates[[2]])) |>
           tibble::as_tibble()
@@ -50,7 +48,7 @@ geocode <- function(data,address_field="addressString",localities=NULL) {
         data$matchPrecision[i]=r$matchPrecision
         data$usedAddressString[i]=address_string
         data$fullAddress[i]=r$fullAddress
-        data$faults[i]=paste0(r$faults.element," ", r$faults.fault)
+        data$faults[i]=if ("faults.element" %in% names(r)) paste0(r$faults.element," ", r$faults.fault) else ""
         }
       }
     }

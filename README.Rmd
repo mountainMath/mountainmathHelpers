@@ -22,7 +22,7 @@ ggplot2::theme_set(mountainmathHelpers::theme_mm())
 [![R-CMD-check](https://github.com/mountainMath/mountainmathHelpers/workflows/R-CMD-check/badge.svg)](https://github.com/mountainMath/mountainmathHelpers/actions)
 <!-- badges: end -->
 
-MountainmathHelpers is a collection of helper functions that are frequently used at [MountainMath](https::/mountainmath.ca). This package can be used to access these functions, be it for reproducing and running code written by MountianMath or because they happen to be useful for whatever code others are writing.
+MountainmathHelpers is a collection of helper functions that are frequently used at [MountainMath](https://mountainmath.ca). This package can be used to access these functions, be it for reproducing and running code written by MountianMath or because they happen to be useful for whatever code others are writing.
 
 ## Reference
 [mountainmathHelpers home page and reference guide](https://mountainmath.github.io/mountainmathHelpers/)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/land_use_helpers.R
 \name{get_metro_vancouver_land_use_data}
 \alias{get_metro_vancouver_land_use_data}
-\title{Metro Vancouver land use data (2011 version)}
+\title{Metro Vancouver land use data}
 \usage{
 get_metro_vancouver_land_use_data(
   vintage = "2016.v2026",
@@ -11,7 +11,8 @@ get_metro_vancouver_land_use_data(
 )
 }
 \arguments{
-\item{vintage}{vintage of the data, valid parameters are 2016 and 2011}
+\item{vintage}{vintage of the data, valid parameters are `"2011"`, `"2016"`, `"2016.v20230517"`,
+or any other string starting with `"2016."` like the default `"2016.v2026"` to label a snapshot of the current 2016 land use data}
 
 \item{cache_path}{directory for caching the data}
 
@@ -21,5 +22,5 @@ get_metro_vancouver_land_use_data(
 an sf object with the metro vancouver land use data
 }
 \description{
-Metro Vancouver land use data (2011 version)
+Metro Vancouver land use data
 }

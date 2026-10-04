@@ -17,7 +17,7 @@ get_vector_tiles(
 
 \item{width}{optional, width in pixels for the display image}
 
-\item{height}{optional, width in height for the display image}
+\item{height}{optional, height in pixels for the display image}
 
 \item{refresh}{results are cached for current session, optionally refresh cache}
 

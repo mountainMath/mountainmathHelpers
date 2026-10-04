@@ -10,9 +10,9 @@ get_2016_census_hydro_layer(
 )
 }
 \arguments{
-\item{cache_path}{directory for caching the data}
+\item{cache_path}{directory for caching the data, required, defaults to the `custom_data_path` option}
 
-\item{refresh}{if true, refresh the data}
+\item{refresh}{if true, download the data again and replace the cached version}
 }
 \value{
 an sf object with the 2016 hydro layer

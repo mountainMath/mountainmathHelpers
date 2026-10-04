@@ -53,11 +53,13 @@ All code is in `R/`, grouped by theme. The pieces that span files:
 **Caching.** There are two mechanisms:
 
 - `simpleCache(object, key, path, refresh)` in `R/miscellaneous.R` is the general key→RDS cache. It relies on R's lazy evaluation: the `object` expression is only evaluated on a cache miss, so callers pass the expensive call inline (`simpleCache(get_shapefile(url), "key")`) and must not assign it to a variable first. With no `path` and no `custom_data_path` option it falls back to `tempdir()`.
-- The StatCan downloaders in `R/land_use_helpers.R` (`get_2016_census_*`, `get_statcan_geographic_attribute_data`) instead use "does the unzip directory exist" under `cache_path` as the cache check. They accept `refresh` but do not act on it, and they need a non-NULL `cache_path`.
+- The StatCan downloaders in `R/land_use_helpers.R` (`get_2016_census_*`, `get_statcan_geographic_attribute_data`) instead go through the unexported `cached_unzip()`, which uses "does the unzip directory exist" under `cache_path` as the cache check. `refresh=TRUE` downloads again and replaces that directory. They stop with an error when `cache_path` is NULL (no `tempdir()` fallback, unlike `simpleCache()`).
 
 `get_metro_vancouver_land_use_data()` dispatches on a `vintage` string; each vintage has its own source URL and cache key, so adding a data release means adding a branch rather than changing an existing one (old vintages are kept for reproducibility of earlier analyses).
 
-**Dependencies.** Everything is called with explicit `pkg::fn()` qualification; the only imports into the namespace are `%>%`, `.data`, `download.file` and `unzip` (declared at the bottom of `R/miscellaneous.R`, which also registers `.` as a global variable). New package dependencies must be added to `Imports` in `DESCRIPTION` — note that some existing code already uses packages not listed there (`purrr` and `tibble` in `R/geocoding.R`, `grid` in `R/theme_mm.R`) and an unqualified `mutate`/`:=` in `facet_transform_geos_by_group()`, which surface in `R CMD check`.
+**Logo.** `add_mm_logo()` in `R/theme_mm.R` returns a theme that replaces `plot.caption` with an S3 subclass of `element_text` (`element_mm_logo`, the same old-style element mechanism `ggtext` uses, works with ggplot2 3.x and 4.x). Its `element_grob` method draws the caption text plus the logo at the bottom left of the caption row, and a `heightDetails` method keeps that row at least as high as the logo. ggplot2 refuses to merge a plain `element_text` onto a subclass, so `add_mm_logo()` has to be the last caption-related theme call.
+
+**Dependencies.** Everything is called with explicit `pkg::fn()` qualification; the only imports into the namespace are `%>%`, `.data`, `download.file` and `unzip` (declared at the bottom of `R/miscellaneous.R`, which also registers `.` as a global variable). New package dependencies must be added to `Imports` in `DESCRIPTION` (base packages like `grid`, `stats` and `utils` included), or to `Suggests` with a `requireNamespace()` check in the function when only a single optional function needs them (`png` for `add_mm_logo()`, the R2 query packages).
 
 ## Conventions
 

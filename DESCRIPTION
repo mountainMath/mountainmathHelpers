@@ -7,7 +7,8 @@ Maintainer: Jens von Bergmann <jens@mountainmath.ca>
 Description: Various helper functions, including convenience geoms for adding vector tiles to a map plot.
 License: MIT + file LICENSE
 Encoding: UTF-8
-LazyData: true
+Depends:
+    R (>= 4.1.0)
 Imports:
     dplyr,
     rlang,
@@ -23,18 +24,15 @@ Imports:
     ggplot2,
     mapboxapi,
     slippymath,
-    geojsonsf
-Requires: 
-    ggplot2,
-    dplyr,
-    readr,
-    rlang,
-    sf,
-    aws.s3
+    geojsonsf,
+    purrr,
+    tibble,
+    grid,
+    stats,
+    utils
 Suggests: 
     knitr,
     rmarkdown,
-    patchwork,
     png,
     arrow,
     duckdb,
@@ -42,5 +40,4 @@ Suggests:
     dbplyr,
     polars
 Additional_repositories: https://community.r-multiverse.org
-VignetteBuilder: knitr
 Config/roxygen2/version: 8.1.0

@@ -28,9 +28,9 @@ simpleCache <- function(object,key,path=getOption("custom_data_path"),refresh=FA
 #' @param binding a string binding two values in the label
 #' @param spacing a spacing string between elements in the label
 #' @param under_text a string taking the space of the lower value and binding if the lower value is `-Inf`
-#' @param over_text a string taking the space of the upper value and binding if the upper value is `-Inf`
+#' @param over_text a string taking the space of the upper value and binding if the upper value is `Inf`
 #' @param ... additional arguments passed to `cut`
-#' @return object, (potentially cached version)
+#' @return a factor with the cut values and pretty labels
 #' @export
 pretty_cut <- function(values,breaks,format=function(d)d,
                        binding="to",spacing=" ",
@@ -182,7 +182,7 @@ get_shapefile <- function(path,file_mask=NA,cache_path=NULL,refresh=FALSE){
     file_name=file_names[1]
   } else {
     file_name <- file_names[grepl(file_mask,file_names)]
-    if (length(file_names)>1)file_names=file_names[1]
+    if (length(file_name)>1) file_name=file_name[1]
   }
   message_string <- paste0("Reading ",file_name,".")
   if (length(file_names)>1) {
@@ -191,7 +191,7 @@ get_shapefile <- function(path,file_mask=NA,cache_path=NULL,refresh=FALSE){
   }
   message(message_string)
   data <- sf::read_sf(file_name)
-  if (!store_permanently) unlink(fs)
+  if (!store_permanently) unlink(cache_path,recursive=TRUE)
   data
 }
 

@@ -28,12 +28,12 @@ pretty_cut(
 
 \item{under_text}{a string taking the space of the lower value and binding if the lower value is `-Inf`}
 
-\item{over_text}{a string taking the space of the upper value and binding if the upper value is `-Inf`}
+\item{over_text}{a string taking the space of the upper value and binding if the upper value is `Inf`}
 
 \item{...}{additional arguments passed to `cut`}
 }
 \value{
-object, (potentially cached version)
+a factor with the cut values and pretty labels
 }
 \description{
 Cut values with pretty labels
