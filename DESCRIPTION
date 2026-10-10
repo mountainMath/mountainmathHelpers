@@ -1,7 +1,7 @@
 Package: mountainmathHelpers
 Type: Package
 Title: Helper Functions by MountainMath
-Version: 0.1.4
+Version: 0.1.5
 Author: Jens von Bergmann <jens@mountainmath.ca>
 Maintainer: Jens von Bergmann <jens@mountainmath.ca>
 Description: Various helper functions, including convenience geoms for adding vector tiles to a map plot.
@@ -14,7 +14,6 @@ Imports:
     rlang,
     R.utils,
     aws.s3,
-    aws.signature,
     digest,
     httr,
     jsonlite,
@@ -34,10 +33,6 @@ Suggests:
     knitr,
     rmarkdown,
     png,
-    arrow,
-    duckdb,
-    DBI,
-    dbplyr,
-    polars
-Additional_repositories: https://community.r-multiverse.org
+    r2parquet
+Remotes: mountainMath/r2parquet
 Config/roxygen2/version: 8.1.0
