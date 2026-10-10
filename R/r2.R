@@ -72,13 +72,61 @@ r2_object_exists <- function(r2_bucket,r2_path){
   status<400
 }
 
+# call the Cloudflare API
+cloudflare_api <- function(verb,path,body=NULL,query=NULL){
+  credentials <- r2_credentials("R2_API_TOKEN")
+  httr::VERB(verb,paste0("https://api.cloudflare.com/client/v4",path),
+             httr::add_headers(Authorization=paste0("Bearer ",credentials[["R2_API_TOKEN"]])),
+             body=body,query=query,encode="json")
+}
+
 # call the Cloudflare API for R2 buckets, needed for bucket settings not available via the S3 compatible API
 r2_api <- function(verb,path="",body=NULL){
-  credentials <- r2_credentials(c("R2_ACCOUNT_ID","R2_API_TOKEN"))
-  url <- paste0("https://api.cloudflare.com/client/v4/accounts/",credentials[["R2_ACCOUNT_ID"]],"/r2/buckets",path)
-  httr::VERB(verb,url,
-             httr::add_headers(Authorization=paste0("Bearer ",credentials[["R2_API_TOKEN"]])),
-             body=body,encode="json")
+  credentials <- r2_credentials("R2_ACCOUNT_ID")
+  cloudflare_api(verb,paste0("/accounts/",credentials[["R2_ACCOUNT_ID"]],"/r2/buckets",path),body=body)
+}
+
+# find the active Cloudflare zone in the R2 account that a domain belongs to
+r2_zone_for_domain <- function(domain){
+  account_id <- r2_credentials("R2_ACCOUNT_ID")[["R2_ACCOUNT_ID"]]
+  labels <- strsplit(domain,".",fixed=TRUE)[[1]]
+  candidates <- vapply(seq_len(max(length(labels)-1,1)),function(i)paste0(labels[i:length(labels)],collapse="."),"")
+  for (candidate in candidates) {
+    response <- cloudflare_api("GET","/zones",query=list(name=candidate,account.id=account_id))
+    r2_stop_for_status(response)
+    zones <- httr::content(response)$result
+    if (length(zones)>0) {
+      zone <- zones[[1]]
+      if (zone$status!="active") {
+        stop(paste0("Cloudflare zone ",zone$name," is not active yet (status ",zone$status,"), ",
+                    "check that the domain uses the Cloudflare nameservers."))
+      }
+      return(zone)
+    }
+  }
+  stop(paste0("No Cloudflare zone found for ",domain,". The domain has to be added to the Cloudflare account ",
+              "of the R2 bucket, and the R2 API token needs Zone Read permission for it."))
+}
+
+# connect a custom domain to the bucket for public read access, or enable it if it is connected but disabled
+r2_connect_custom_domain <- function(r2_bucket,domain){
+  response <- r2_api("GET",paste0("/",r2_bucket,"/domains/custom"))
+  r2_stop_for_status(response)
+  existing <- Filter(function(d)d$domain==domain,httr::content(response)$result$domains)
+  if (length(existing)>0 && isTRUE(existing[[1]]$enabled)) {
+    message(paste0("Custom domain ",domain," is already connected to R2 bucket ",r2_bucket,"."))
+  } else if (length(existing)>0) {
+    response <- r2_api("PUT",paste0("/",r2_bucket,"/domains/custom/",domain),body=list(enabled=TRUE))
+    r2_stop_for_status(response)
+    message(paste0("Enabled custom domain ",domain," for R2 bucket ",r2_bucket,"."))
+  } else {
+    zone <- r2_zone_for_domain(domain)
+    response <- r2_api("POST",paste0("/",r2_bucket,"/domains/custom"),
+                       body=list(domain=domain,zoneId=zone$id,enabled=TRUE))
+    r2_stop_for_status(response)
+    message(paste0("Connected custom domain ",domain," to R2 bucket ",r2_bucket,". ",
+                   "It can take a few minutes until the certificate is issued and the domain is active."))
+  }
 }
 
 # stop with the error messages returned by the Cloudflare API
@@ -105,19 +153,25 @@ file_to_filesystem <- function(path,filesystem,destination,chunk_size=8*1024^2){
 #' create Cloudflare R2 bucket with private or public access
 #'
 #' @description
-#' Creates the bucket if it does not exist yet. Buckets are private by default, public access is granted
-#' by enabling the `r2.dev` public development URL of the bucket. Cloudflare rate limits access via `r2.dev`,
-#' for heavier use connect a custom domain to the bucket. Public access can also be enabled on existing buckets,
-#' but this function never turns off public access.
+#' Creates the bucket if it does not exist yet. Buckets are private by default. Public read access is granted
+#' either by connecting a custom domain to the bucket, or by enabling the `r2.dev` public development URL
+#' of the bucket. Cloudflare rate limits access via `r2.dev`, for heavier use connect a custom domain.
+#' Public access can also be enabled on existing buckets, but this function never turns off public access.
 #'
 #' Expects the R2 account id and the value of an R2 API token with admin read and write permissions
-#' to be available as `R2_ACCOUNT_ID` and `R2_API_TOKEN` environment variables.
+#' to be available as `R2_ACCOUNT_ID` and `R2_API_TOKEN` environment variables. For connecting a custom
+#' domain the token also needs Zone Read permission for the domain's zone, which has to be an active zone
+#' in the same Cloudflare account. Each custom domain can only serve one bucket, use subdomains like
+#' `data.example.com` to serve several buckets from one zone.
 #'
 #' @param r2_bucket R2 bucket name
-#' @param public if `TRUE`, enable public read access to the bucket, default is `FALSE`
-#' @return (invisibly) the public base url of the bucket if `public` is `TRUE`, otherwise `NULL`
+#' @param public if `TRUE`, enable public read access to the bucket via the `r2.dev` URL, default is `FALSE`.
+#' Ignored if `custom_domain` is set.
+#' @param custom_domain optional domain, like `data.example.com`, to connect to the bucket for public read access.
+#' The `r2.dev` URL is not enabled in this case.
+#' @return (invisibly) the public base url of the bucket if it is publicly accessible, otherwise `NULL`
 #' @export
-create_r2_bucket <- function(r2_bucket,public=FALSE) {
+create_r2_bucket <- function(r2_bucket,public=FALSE,custom_domain=NULL) {
   response <- r2_api("GET",paste0("/",r2_bucket))
   if (httr::status_code(response)==404) {
     message(paste0("Creating R2 bucket ",r2_bucket,"."))
@@ -127,7 +181,12 @@ create_r2_bucket <- function(r2_bucket,public=FALSE) {
   }
   r2_stop_for_status(response)
   public_url <- NULL
-  if (public) {
+  if (!is.null(custom_domain)) {
+    custom_domain <- sub("/+$","",sub("^https?://","",tolower(custom_domain)))
+    r2_connect_custom_domain(r2_bucket,custom_domain)
+    public_url <- paste0("https://",custom_domain)
+    message(paste0("R2 bucket ",r2_bucket," is publicly accessible at ",public_url,"."))
+  } else if (public) {
     response <- r2_api("PUT",paste0("/",r2_bucket,"/domains/managed"),body=list(enabled=TRUE))
     r2_stop_for_status(response)
     public_url <- paste0("https://",httr::content(response)$result$domain)
