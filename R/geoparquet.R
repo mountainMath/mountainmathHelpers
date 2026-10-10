@@ -144,6 +144,8 @@ sf_to_r2_geoparquet <- function(data,r2_bucket,r2_path,...) {
   dir.create(tmp_dir)
   on.exit(unlink(tmp_dir,recursive=TRUE))
   path <- sf_to_geoparquet(data,file.path(tmp_dir,basename(r2_path)),...)
+  message("Uploading ",format(structure(file.size(path),class="object_size"),units="auto",standard="SI"),
+          " parquet file to ",r2_bucket,"/",r2_path,".")
   parquet_to_r2(path,r2_bucket,r2_path)
 }
 
