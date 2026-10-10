@@ -42,6 +42,22 @@ duckdb_geometry_column <- function(tbl,geometry_column=NULL){
   list(name=geometry_column,crs=geometry_columns[[geometry_column]])
 }
 
+# fix invalid geometries, leaving valid ones untouched, and keep multi geometries multi so that
+# geometry types stay consistent, st_make_valid turns single part multi polygons into polygons
+make_valid_geometries <- function(geometry){
+  invalid <- !sf::st_is_valid(geometry)
+  invalid[is.na(invalid)] <- TRUE
+  if (!any(invalid)) return(geometry)
+  message("Repairing ",sum(invalid)," invalid geometr",ifelse(sum(invalid)==1,"y","ies")," via sf::st_make_valid.")
+  original_types <- as.character(sf::st_geometry_type(geometry[invalid]))
+  fixed <- sf::st_make_valid(geometry[invalid])
+  fixed_types <- as.character(sf::st_geometry_type(fixed))
+  multi <- which(grepl("^MULTI",original_types) & fixed_types==sub("^MULTI","",original_types))
+  fixed[multi] <- lapply(multi,function(i)sf::st_cast(fixed[[i]],original_types[i]))
+  geometry[invalid] <- fixed
+  geometry
+}
+
 #' write sf object to GeoParquet
 #'
 #' @description
@@ -53,6 +69,9 @@ duckdb_geometry_column <- function(tbl,geometry_column=NULL){
 #' Smaller row groups allow for finer grained skipping, at the expense of larger metadata. DuckDB writes row groups
 #' in multiples of 2048 rows, smaller values of `row_group_size` result in row groups of 2048 rows, so data with fewer
 #' rows ends up in a single row group and filters can't skip any part of the geometry.
+#'
+#' Invalid geometries get fixed via `sf::st_make_valid`, keeping multi geometries multi, and the geometry column is always named `geometry`,
+#' following the GeoParquet convention, independent of its name in `data`. Both emit a message when they change the data.
 #'
 #' Readers without support for the native GEOMETRY type, like arrow or polars, can't use the bounding box
 #' statistics. For these `bbox_column=TRUE` adds a `bbox` struct column with the bounding box of each geometry,
@@ -67,7 +86,7 @@ duckdb_geometry_column <- function(tbl,geometry_column=NULL){
 #' @export
 sf_to_geoparquet <- function(data,path,sort_by=NULL,row_group_size=10000L,bbox_column=FALSE) {
   check_geoparquet_packages()
-  geometry_column <- attr(data,"sf_column")
+  if ("geometry" %in% setdiff(names(data),attr(data,"sf_column"))) stop("Data has a non-geometry column named geometry.")
   missing_columns <- setdiff(sort_by,names(data))
   if (length(missing_columns)>0) stop(paste0("Columns ",paste0(missing_columns,collapse=", ")," not found in data."))
   if (bbox_column && "bbox" %in% names(data)) stop("Data already has a bbox column.")
@@ -76,8 +95,12 @@ sf_to_geoparquet <- function(data,path,sort_by=NULL,row_group_size=10000L,bbox_c
   on.exit(DBI::dbDisconnect(con,shutdown=TRUE))
   DBI::dbExecute(con,"INSTALL spatial")
   DBI::dbExecute(con,"LOAD spatial")
+  geometry_column <- "geometry"
+  if (attr(data,"sf_column")!=geometry_column) {
+    message("Renaming geometry column ",attr(data,"sf_column")," to the GeoParquet standard name geometry.")
+  }
   df <- sf::st_drop_geometry(data)
-  df[[geometry_column]] <- unclass(sf::st_as_binary(sf::st_geometry(data)))
+  df[[geometry_column]] <- unclass(sf::st_as_binary(make_valid_geometries(sf::st_geometry(data))))
   duckdb::duckdb_register(con,"sf_data",df)
   geometry <- DBI::dbQuoteIdentifier(con,geometry_column)
   crs <- duckdb_crs(sf::st_crs(data))

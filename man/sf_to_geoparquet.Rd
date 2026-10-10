@@ -36,6 +36,9 @@ Smaller row groups allow for finer grained skipping, at the expense of larger me
 in multiples of 2048 rows, smaller values of `row_group_size` result in row groups of 2048 rows, so data with fewer
 rows ends up in a single row group and filters can't skip any part of the geometry.
 
+Invalid geometries get fixed via `sf::st_make_valid`, keeping multi geometries multi, and the geometry column is always named `geometry`,
+following the GeoParquet convention, independent of its name in `data`. Both emit a message when they change the data.
+
 Readers without support for the native GEOMETRY type, like arrow or polars, can't use the bounding box
 statistics. For these `bbox_column=TRUE` adds a `bbox` struct column with the bounding box of each geometry,
 whose statistics they can filter on. `filter_spatial` uses this column if present.
