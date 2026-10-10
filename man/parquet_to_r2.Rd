@@ -4,7 +4,7 @@
 \alias{parquet_to_r2}
 \title{transfer parquet files to Cloudflare R2}
 \usage{
-parquet_to_r2(path, r2_bucket, r2_path = "")
+parquet_to_r2(path, r2_bucket, r2_path = "", purge_cache = TRUE)
 }
 \arguments{
 \item{path}{path to local parquet file or directory with (partitioned) parquet files}
@@ -14,6 +14,8 @@ parquet_to_r2(path, r2_bucket, r2_path = "")
 \item{r2_path}{path in bucket. If `path` is a file and `r2_path` is a path component ending with a slash (`/`)
 the basename of the input path will be appended. If `path` is a directory `r2_path` is the path
 under which the content of the directory gets placed.}
+
+\item{purge_cache}{if `TRUE`, the default, purge the uploaded files from the Cloudflare cache of custom domains of the bucket}
 }
 \value{
 (invisibly) the paths in the bucket of the uploaded files
@@ -24,4 +26,8 @@ keeping the directory structure. The bucket has to exist, use `create_r2_bucket`
 Expects the R2 account id and the access key id and secret access key
 of an R2 API token to be available as `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
 environment variables.
+
+If the bucket is served via a custom domain, the uploaded files get purged from the Cloudflare cache
+so that the new versions are served right away. This needs the value of an R2 API token with Zone Cache Purge
+permission in the `R2_API_TOKEN` environment variable, see `create_r2_bucket`, and is skipped if it is not set.
 }

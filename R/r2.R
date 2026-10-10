@@ -139,6 +139,31 @@ r2_stop_for_status <- function(response){
   }
 }
 
+# purge objects served via custom domains of the bucket from the Cloudflare cache
+r2_purge_cache <- function(r2_bucket,r2_paths){
+  response <- r2_api("GET",paste0("/",r2_bucket,"/domains/custom"))
+  r2_stop_for_status(response)
+  domains <- Filter(function(d)isTRUE(d$enabled),httr::content(response)$result$domains)
+  for (domain in domains) {
+    urls <- paste0("https://",domain$domain,"/",vapply(r2_paths,utils::URLencode,"",USE.NAMES=FALSE))
+    # the purge API accepts a limited number of urls per request
+    for (batch in split(urls,ceiling(seq_along(urls)/30))) {
+      response <- cloudflare_api("POST",paste0("/zones/",domain$zoneId,"/purge_cache"),body=list(files=as.list(batch)))
+      r2_stop_for_status(response)
+    }
+  }
+}
+
+# purge cache after writing or removing objects, failure to purge only warrants a warning
+# as the objects have already been changed at this point
+r2_purge_cache_after_change <- function(r2_bucket,r2_paths){
+  if (Sys.getenv("R2_API_TOKEN")=="") return(invisible())
+  tryCatch(r2_purge_cache(r2_bucket,r2_paths),
+           error=function(e)warning(paste0("Purging the Cloudflare cache for R2 bucket ",r2_bucket," failed, ",
+                                           "cached copies of the changed files may be served until they expire. ",
+                                           conditionMessage(e)),call.=FALSE))
+}
+
 # stream local file to arrow filesystem in chunks, large files get uploaded as multipart uploads
 file_to_filesystem <- function(path,filesystem,destination,chunk_size=8*1024^2){
   input <- file(path,"rb")
@@ -161,7 +186,8 @@ file_to_filesystem <- function(path,filesystem,destination,chunk_size=8*1024^2){
 #' Expects the R2 account id and the value of an R2 API token with admin read and write permissions
 #' to be available as `R2_ACCOUNT_ID` and `R2_API_TOKEN` environment variables. For connecting a custom
 #' domain the token also needs Zone Read permission for the domain's zone, which has to be an active zone
-#' in the same Cloudflare account. Each custom domain can only serve one bucket, use subdomains like
+#' in the same Cloudflare account. With Zone Cache Purge permission as well, `parquet_to_r2` and
+#' `remove_parquet_from_r2` purge changed files from the cache. Each custom domain can only serve one bucket, use subdomains like
 #' `data.example.com` to serve several buckets from one zone.
 #'
 #' @param r2_bucket R2 bucket name
@@ -204,14 +230,19 @@ create_r2_bucket <- function(r2_bucket,public=FALSE,custom_domain=NULL) {
 #' of an R2 API token to be available as `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
 #' environment variables.
 #'
+#' If the bucket is served via a custom domain, the uploaded files get purged from the Cloudflare cache
+#' so that the new versions are served right away. This needs the value of an R2 API token with Zone Cache Purge
+#' permission in the `R2_API_TOKEN` environment variable, see `create_r2_bucket`, and is skipped if it is not set.
+#'
 #' @param path path to local parquet file or directory with (partitioned) parquet files
 #' @param r2_bucket R2 bucket name
 #' @param r2_path path in bucket. If `path` is a file and `r2_path` is a path component ending with a slash (`/`)
 #' the basename of the input path will be appended. If `path` is a directory `r2_path` is the path
 #' under which the content of the directory gets placed.
+#' @param purge_cache if `TRUE`, the default, purge the uploaded files from the Cloudflare cache of custom domains of the bucket
 #' @return (invisibly) the paths in the bucket of the uploaded files
 #' @export
-parquet_to_r2 <- function(path,r2_bucket,r2_path="") {
+parquet_to_r2 <- function(path,r2_bucket,r2_path="",purge_cache=TRUE) {
   if (!requireNamespace("arrow",quietly=TRUE)) {
     stop("The arrow package is required to upload to R2.")
   }
@@ -235,6 +266,7 @@ parquet_to_r2 <- function(path,r2_bucket,r2_path="") {
   for (i in seq_along(files)) {
     file_to_filesystem(files[i],filesystem,paste0(r2_bucket,"/",r2_paths[i]))
   }
+  if (purge_cache) r2_purge_cache_after_change(r2_bucket,r2_paths)
   invisible(r2_paths)
 }
 
@@ -247,11 +279,15 @@ parquet_to_r2 <- function(path,r2_bucket,r2_path="") {
 #' of an R2 API token to be available as `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY`
 #' environment variables.
 #'
+#' If the bucket is served via a custom domain, the removed files get purged from the Cloudflare cache,
+#' with the same requirements as for `parquet_to_r2`.
+#'
 #' @param r2_bucket R2 bucket name
 #' @param r2_path path in bucket of the parquet file, or of the directory with (partitioned) parquet files
+#' @param purge_cache if `TRUE`, the default, purge the removed files from the Cloudflare cache of custom domains of the bucket
 #' @return (invisibly) the paths in the bucket of the removed files
 #' @export
-remove_parquet_from_r2 <- function(r2_bucket,r2_path) {
+remove_parquet_from_r2 <- function(r2_bucket,r2_path,purge_cache=TRUE) {
   if (!requireNamespace("arrow",quietly=TRUE)) {
     stop("The arrow package is required to access R2.")
   }
@@ -273,6 +309,7 @@ remove_parquet_from_r2 <- function(r2_bucket,r2_path) {
   for (p in r2_paths) {
     r2_delete_object(r2_bucket,p)
   }
+  if (purge_cache) r2_purge_cache_after_change(r2_bucket,r2_paths)
   message(paste0("Removed ",length(r2_paths)," file",if (length(r2_paths)>1) "s" else ""," from R2 bucket ",r2_bucket,"."))
   invisible(r2_paths)
 }
