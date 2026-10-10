@@ -50,7 +50,9 @@ duckdb_geometry_column <- function(tbl,geometry_column=NULL){
 #' compact area and spatial filters can skip row groups based on their bounding box when reading remotely,
 #' see `filter_spatial`. Use `sort_by` to sort by attribute columns first, so that filters on these columns
 #' can skip row groups as well. Within each value of the `sort_by` columns the rows are still sorted spatially.
-#' Smaller row groups allow for finer grained skipping, at the expense of larger metadata.
+#' Smaller row groups allow for finer grained skipping, at the expense of larger metadata. DuckDB writes row groups
+#' in multiples of 2048 rows, smaller values of `row_group_size` result in row groups of 2048 rows, so data with fewer
+#' rows ends up in a single row group and filters can't skip any part of the geometry.
 #'
 #' Readers without support for the native GEOMETRY type, like arrow or polars, can't use the bounding box
 #' statistics. For these `bbox_column=TRUE` adds a `bbox` struct column with the bounding box of each geometry,
@@ -59,7 +61,7 @@ duckdb_geometry_column <- function(tbl,geometry_column=NULL){
 #' @param data sf object
 #' @param path path of the parquet file to write
 #' @param sort_by optional vector of column names to sort by before sorting spatially
-#' @param row_group_size number of rows per row group, default is 10000
+#' @param row_group_size number of rows per row group, rounded up to a multiple of 2048 by DuckDB, default is 10000
 #' @param bbox_column if `TRUE`, add a `bbox` struct column with the bounding box of each geometry, default is `FALSE`
 #' @return (invisibly) the path of the parquet file
 #' @export
@@ -69,6 +71,7 @@ sf_to_geoparquet <- function(data,path,sort_by=NULL,row_group_size=10000L,bbox_c
   missing_columns <- setdiff(sort_by,names(data))
   if (length(missing_columns)>0) stop(paste0("Columns ",paste0(missing_columns,collapse=", ")," not found in data."))
   if (bbox_column && "bbox" %in% names(data)) stop("Data already has a bbox column.")
+  if (row_group_size<2048) warning("DuckDB writes row groups of at least 2048 rows, row_group_size has no effect below that.",call.=FALSE)
   con <- DBI::dbConnect(duckdb::duckdb())
   on.exit(DBI::dbDisconnect(con,shutdown=TRUE))
   DBI::dbExecute(con,"INSTALL spatial")

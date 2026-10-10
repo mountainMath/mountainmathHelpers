@@ -19,7 +19,7 @@ sf_to_geoparquet(
 
 \item{sort_by}{optional vector of column names to sort by before sorting spatially}
 
-\item{row_group_size}{number of rows per row group, default is 10000}
+\item{row_group_size}{number of rows per row group, rounded up to a multiple of 2048 by DuckDB, default is 10000}
 
 \item{bbox_column}{if `TRUE`, add a `bbox` struct column with the bounding box of each geometry, default is `FALSE`}
 }
@@ -32,7 +32,9 @@ and a bounding box per row group. Rows get sorted along a Hilbert curve, so that
 compact area and spatial filters can skip row groups based on their bounding box when reading remotely,
 see `filter_spatial`. Use `sort_by` to sort by attribute columns first, so that filters on these columns
 can skip row groups as well. Within each value of the `sort_by` columns the rows are still sorted spatially.
-Smaller row groups allow for finer grained skipping, at the expense of larger metadata.
+Smaller row groups allow for finer grained skipping, at the expense of larger metadata. DuckDB writes row groups
+in multiples of 2048 rows, smaller values of `row_group_size` result in row groups of 2048 rows, so data with fewer
+rows ends up in a single row group and filters can't skip any part of the geometry.
 
 Readers without support for the native GEOMETRY type, like arrow or polars, can't use the bounding box
 statistics. For these `bbox_column=TRUE` adds a `bbox` struct column with the bounding box of each geometry,
